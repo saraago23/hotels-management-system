@@ -2,7 +2,6 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.EmployeeDTO;
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
-import com.academy.project.hotelsmanagementsystem.entity.EmployeeEntity;
 import com.academy.project.hotelsmanagementsystem.repository.EmployeeRepository;
 import com.academy.project.hotelsmanagementsystem.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -33,8 +32,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Optional<EmployeeEntity> findEmployeeById(Integer id) {
-        return employeeRepository.findById(id);
+    public Optional<EmployeeDTO> findEmployeeById(Integer id) {
+        return employeeRepository.findById(id)
+                .map(EMPLOYEE_MAPPER::toDto);
     }
 
     @Override

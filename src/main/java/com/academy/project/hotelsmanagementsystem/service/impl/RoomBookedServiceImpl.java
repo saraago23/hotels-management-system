@@ -2,7 +2,6 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoomBookedDTO;
-import com.academy.project.hotelsmanagementsystem.entity.RoomBookedEntity;
 import com.academy.project.hotelsmanagementsystem.repository.RoomBookedRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoomBookedService;
 import jakarta.validation.Valid;
@@ -34,8 +33,9 @@ public class RoomBookedServiceImpl implements RoomBookedService {
     }
 
     @Override
-    public Optional<RoomBookedEntity> findRoomBookedById(Integer id) {
-        return roomBookedRepository.findById(id);
+    public Optional<RoomBookedDTO> findRoomBookedById(Integer id) {
+        return roomBookedRepository.findById(id)
+                .map(ROOM_BOOKED_MAPPER::toDto);
     }
 
     @Override

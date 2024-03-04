@@ -2,7 +2,6 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoomTypeDTO;
-import com.academy.project.hotelsmanagementsystem.entity.RoomTypeEntity;
 import com.academy.project.hotelsmanagementsystem.repository.RoomTypeRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoomTypeService;
 import jakarta.validation.Valid;
@@ -34,8 +33,9 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Override
-    public Optional<RoomTypeEntity> findRoomTypeById(Integer id) {
-        return roomTypeRepository.findById(id);
+    public Optional<RoomTypeDTO> findRoomTypeById(Integer id) {
+        return roomTypeRepository.findById(id)
+                .map(ROOM_TYPE_MAPPER::toDto);
     }
 
     @Override

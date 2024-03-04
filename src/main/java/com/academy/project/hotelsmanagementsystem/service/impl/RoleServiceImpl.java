@@ -2,7 +2,6 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoleDTO;
-import com.academy.project.hotelsmanagementsystem.entity.RoleEntity;
 import com.academy.project.hotelsmanagementsystem.repository.RoleRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoleService;
 import jakarta.validation.Valid;
@@ -34,8 +33,9 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Optional<RoleEntity> findRoleById(Integer id) {
-        return roleRepository.findById(id);
+    public Optional<RoleDTO> findRoleById(Integer id) {
+        return roleRepository.findById(id)
+                .map(ROLE_MAPPER::toDto);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.HotelDTO;
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
-import com.academy.project.hotelsmanagementsystem.entity.HotelEntity;
 import com.academy.project.hotelsmanagementsystem.repository.HotelRepository;
 import com.academy.project.hotelsmanagementsystem.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +29,9 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Optional<HotelEntity> findHotelById(Integer id) {
-        return hotelRepository.findById(id);
+    public Optional<HotelDTO> findHotelById(Integer id) {
+        return hotelRepository.findById(id)
+                .map(HOTEL_MAPPER::toDto);
     }
 
     @Override

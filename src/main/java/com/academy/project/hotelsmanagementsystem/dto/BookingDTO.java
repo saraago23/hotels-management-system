@@ -1,6 +1,5 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
-import com.academy.project.hotelsmanagementsystem.entity.UserEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,7 @@ public class BookingDTO {
     @NotNull
     private Integer id;
     @NotNull
-    private UserEntity user;
+    private UserDTO user;
     @NotNull
     private Integer totalPrice;
     @NotNull

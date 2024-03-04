@@ -2,7 +2,6 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.dto.PersonDTO;
-import com.academy.project.hotelsmanagementsystem.entity.PersonEntity;
 import com.academy.project.hotelsmanagementsystem.repository.PersonRepository;
 import com.academy.project.hotelsmanagementsystem.service.PersonService;
 import jakarta.validation.Valid;
@@ -33,8 +32,9 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Optional<PersonEntity> findPersonById(Integer id) {
-        return personRepository.findById(id);
+    public Optional<PersonDTO> findPersonById(Integer id) {
+        return personRepository.findById(id)
+                .map(PERSON_MAPPER::toDto);
     }
 
     @Override

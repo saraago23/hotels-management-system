@@ -1,7 +1,5 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
-import com.academy.project.hotelsmanagementsystem.entity.PersonEntity;
-import com.academy.project.hotelsmanagementsystem.entity.RoleEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,9 +14,9 @@ public class UserDTO {
     @NotNull(message = "{user.validations.id}")
     private Integer id;
     @NotNull(message = "{user.validation.person}")
-    private PersonEntity person;
+    private PersonDTO person;
     @NotNull(message = "{user.validation.role}")
-    private RoleEntity role;
+    private RoleDTO role;
     @NotNull(message = "{user.validation.username}")
     private String username;
     @NotNull(message = "{user.validation.password}")

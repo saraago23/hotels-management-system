@@ -1,7 +1,5 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
-import com.academy.project.hotelsmanagementsystem.entity.BookingEntity;
-import com.academy.project.hotelsmanagementsystem.entity.RoomEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +15,9 @@ public class RoomBookedDTO {
     @NotNull(message = "{roomBooked.validations.id}")
     private Integer id;
     @NotNull(message = "{roomBooked.validations.room}")
-    private RoomEntity room;
+    private RoomDTO room;
     @NotNull(message = "{roomBooked.validations.booking}")
-    private BookingEntity booking;
+    private BookingDTO booking;
     @NotNull(message = "{roomBooked.validations.price}")
     private Integer price;
 }

@@ -2,7 +2,6 @@ package com.academy.project.hotelsmanagementsystem.service;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoleDTO;
-import com.academy.project.hotelsmanagementsystem.entity.RoleEntity;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +11,7 @@ public interface RoleService {
     PageDTO<RoleDTO> findAll(Pageable pageable);
 
     RoleDTO addRole(@Valid RoleDTO req);
-    Optional<RoleEntity> findRoleById(Integer id);
+    Optional<RoleDTO> findRoleById(Integer id);
     RoleDTO updateRole(Integer id,@Valid RoleDTO req);
     void deleteRole(Integer id);
 }
