@@ -33,13 +33,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Optional<RoleDTO> findRoleById(Integer id) {
+    public Optional<RoleDTO> findRoleById(Long id) {
         return roleRepository.findById(id)
                 .map(ROLE_MAPPER::toDto);
     }
 
     @Override
-    public RoleDTO updateRole(Integer id, @Valid RoleDTO req) {
+    public RoleDTO updateRole(Long id, @Valid RoleDTO req) {
         req.setId(id);
         return roleRepository.findById(id)
                 .map(o -> ROLE_MAPPER.toEntity(req))
@@ -49,7 +49,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void deleteRole(Integer id) {
+    public void deleteRole(Long id) {
 
     }
 }

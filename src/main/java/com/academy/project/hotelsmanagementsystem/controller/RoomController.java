@@ -26,7 +26,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoomDTO> getRoomById(@PathVariable Integer id){
+    public ResponseEntity<RoomDTO> getRoomById(@PathVariable Long id){
         return ResponseEntity.ok(roomService.findRoomById(id).orElse(null));
     }
 
@@ -36,7 +36,7 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoomDTO> updateRoom(@PathVariable Integer id,@RequestBody RoomDTO room){
+    public ResponseEntity<RoomDTO> updateRoom(@PathVariable Long id,@RequestBody RoomDTO room){
         return ResponseEntity.ok(roomService.updateRoom(id,room));
     }
 }

@@ -26,7 +26,7 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoleDTO> getRoleById(@PathVariable Integer id){
+    public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long id){
         return ResponseEntity.ok(roleService.findRoleById(id).orElse(null));
     }
 
@@ -36,7 +36,7 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoleDTO> updateRole(@PathVariable Integer id,@RequestBody RoleDTO role){
+    public ResponseEntity<RoleDTO> updateRole(@PathVariable Long id,@RequestBody RoleDTO role){
         return ResponseEntity.ok(roleService.updateRole(id,role));
     }
 }

@@ -11,8 +11,8 @@ public interface RoomTypeService {
     PageDTO<RoomTypeDTO> findAll(Pageable pageable);
 
     RoomTypeDTO addRoomType(@Valid RoomTypeDTO req);
-    Optional<RoomTypeDTO> findRoomTypeById(Integer id);
-    RoomTypeDTO updateRoomType(Integer id,@Valid RoomTypeDTO req);
-    void deleteRoomType(Integer id);
+    Optional<RoomTypeDTO> findRoomTypeById(Long id);
+    RoomTypeDTO updateRoomType(Long id,@Valid RoomTypeDTO req);
+    void deleteRoomType(Long id);
 
 }

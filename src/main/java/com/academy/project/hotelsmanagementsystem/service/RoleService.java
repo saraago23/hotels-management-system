@@ -11,7 +11,7 @@ public interface RoleService {
     PageDTO<RoleDTO> findAll(Pageable pageable);
 
     RoleDTO addRole(@Valid RoleDTO req);
-    Optional<RoleDTO> findRoleById(Integer id);
-    RoleDTO updateRole(Integer id,@Valid RoleDTO req);
-    void deleteRole(Integer id);
+    Optional<RoleDTO> findRoleById(Long id);
+    RoleDTO updateRole(Long id,@Valid RoleDTO req);
+    void deleteRole(Long id);
 }

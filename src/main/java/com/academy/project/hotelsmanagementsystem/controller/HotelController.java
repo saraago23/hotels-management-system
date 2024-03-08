@@ -26,7 +26,7 @@ public class HotelController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HotelDTO> getHotelById(@PathVariable Integer id){
+    public ResponseEntity<HotelDTO> getHotelById(@PathVariable Long id){
         return ResponseEntity.ok(hotelService.findHotelById(id).orElse(null));
     }
 
@@ -36,7 +36,7 @@ public class HotelController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HotelDTO> updateHotel(@PathVariable Integer id,@RequestBody HotelDTO hotel){
+    public ResponseEntity<HotelDTO> updateHotel(@PathVariable Long id,@RequestBody HotelDTO hotel){
         return ResponseEntity.ok(hotelService.updateHotel(id,hotel));
     }
 }

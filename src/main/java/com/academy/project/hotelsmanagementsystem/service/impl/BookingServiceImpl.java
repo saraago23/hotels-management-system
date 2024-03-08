@@ -33,13 +33,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Optional<BookingDTO> findBookingById(Integer id) {
+    public Optional<BookingDTO> findBookingById(Long id) {
         return bookingRepository.findById(id)
                 .map(BOOKING_MAPPER::toDto);
     }
 
     @Override
-    public BookingDTO updateBooking(Integer id, @Valid BookingDTO req) {
+    public BookingDTO updateBooking(Long id, @Valid BookingDTO req) {
         req.setId(id);
         return bookingRepository.findById(id)
                 .map(o->BOOKING_MAPPER.toEntity(req))
@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void deleteBooking(Integer id) {
+    public void deleteBooking(Long id) {
 
     }
 }

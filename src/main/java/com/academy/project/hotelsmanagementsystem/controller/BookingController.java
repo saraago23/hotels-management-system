@@ -26,7 +26,7 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookingDTO> findBookingById(@PathVariable Integer id) {
+    public ResponseEntity<BookingDTO> findBookingById(@PathVariable Long id) {
        var emp=bookingService.findBookingById(id)
                .orElseThrow(()-> new RecordNotFoundException("Booking with id: " + id + " was not found"));
         return ResponseEntity.ok(emp);
@@ -38,7 +38,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookingDTO> updateBooking(@PathVariable Integer id,@RequestBody BookingDTO booking){
+    public ResponseEntity<BookingDTO> updateBooking(@PathVariable Long id,@RequestBody BookingDTO booking){
         return ResponseEntity.ok(bookingService.updateBooking(id,booking));
     }
 }

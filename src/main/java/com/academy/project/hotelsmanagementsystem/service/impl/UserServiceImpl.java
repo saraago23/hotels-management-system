@@ -34,13 +34,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDTO> findUserById(Integer id) {
+    public Optional<UserDTO> findUserById(Long id) {
         return userRepository.findById(id)
                 .map(USER_MAPPER::toDto);
     }
 
     @Override
-    public UserDTO updateUser(Integer id, @Valid UserDTO req) {
+    public UserDTO updateUser(Long id, @Valid UserDTO req) {
         req.setId(id);
         return userRepository.findById(id)
                 .map(o->USER_MAPPER.toEntity(req))
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Integer id) {
+    public void deleteUser(Long id) {
 
     }
 }

@@ -29,13 +29,13 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public Optional<HotelDTO> findHotelById(Integer id) {
+    public Optional<HotelDTO> findHotelById(Long id) {
         return hotelRepository.findById(id)
                 .map(HOTEL_MAPPER::toDto);
     }
 
     @Override
-    public HotelDTO updateHotel(Integer id, HotelDTO req) {
+    public HotelDTO updateHotel(Long id, HotelDTO req) {
         req.setId(id);
         return hotelRepository.findById(id)
                 .map(o->HOTEL_MAPPER.toEntity(req))
@@ -45,7 +45,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public void deleteHotel(Integer id) {
+    public void deleteHotel(Long id) {
 
     }
 }

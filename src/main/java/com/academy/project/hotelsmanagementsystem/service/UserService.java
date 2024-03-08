@@ -11,7 +11,7 @@ public interface UserService {
 
     PageDTO<UserDTO> findAll(Pageable pageable);
     UserDTO addUser (@Valid UserDTO req);
-    Optional<UserDTO>findUserById(Integer id);
-    UserDTO updateUser(Integer id, @Valid UserDTO req);
-    void deleteUser(Integer id);
+    Optional<UserDTO>findUserById(Long id);
+    UserDTO updateUser(Long id, @Valid UserDTO req);
+    void deleteUser(Long id);
 }

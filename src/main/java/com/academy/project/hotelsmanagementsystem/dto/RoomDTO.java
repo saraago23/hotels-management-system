@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomDTO {
-    @NotNull(message = "{room.validations.id}")
-    private Integer id;
+   // @NotNull(message = "{room.validations.id}")
+    private Long id;
     @NotNull(message = "{room.validations.roomType}")
     private RoomTypeDTO roomType;
     @NotNull(message = "{room.validations.hotel}")

@@ -11,7 +11,7 @@ public interface HotelService {
 
     PageDTO<HotelDTO> findAll(Pageable pageable);
     HotelDTO addHotel(@Valid HotelDTO req);
-    Optional<HotelDTO> findHotelById(Integer id);
-    HotelDTO updateHotel(Integer id,@Valid HotelDTO req);
-    void deleteHotel(Integer id);
+    Optional<HotelDTO> findHotelById(Long id);
+    HotelDTO updateHotel(Long id,@Valid HotelDTO req);
+    void deleteHotel(Long id);
 }

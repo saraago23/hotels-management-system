@@ -33,13 +33,13 @@ public class RoomBookedServiceImpl implements RoomBookedService {
     }
 
     @Override
-    public Optional<RoomBookedDTO> findRoomBookedById(Integer id) {
+    public Optional<RoomBookedDTO> findRoomBookedById(Long id) {
         return roomBookedRepository.findById(id)
                 .map(ROOM_BOOKED_MAPPER::toDto);
     }
 
     @Override
-    public RoomBookedDTO updateRoomBooked(Integer id, @Valid RoomBookedDTO req) {
+    public RoomBookedDTO updateRoomBooked(Long id, @Valid RoomBookedDTO req) {
         req.setId(id);
         return roomBookedRepository.findById(id)
                 .map(o -> ROOM_BOOKED_MAPPER.toEntity(req))
@@ -50,7 +50,7 @@ public class RoomBookedServiceImpl implements RoomBookedService {
     }
 
     @Override
-    public void deleteRoomBooked(Integer id) {
+    public void deleteRoomBooked(Long id) {
 
     }
 }

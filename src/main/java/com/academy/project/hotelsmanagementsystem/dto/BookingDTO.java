@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDTO {
-    @NotNull
-    private Integer id;
+    //@NotNull
+    private Long id;
     @NotNull
     private UserDTO user;
     @NotNull

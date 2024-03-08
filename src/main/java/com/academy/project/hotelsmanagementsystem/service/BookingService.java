@@ -12,9 +12,9 @@ public interface BookingService {
 
     BookingDTO addBooking(@Valid BookingDTO req);
 
-    Optional<BookingDTO> findBookingById(Integer id);
+    Optional<BookingDTO> findBookingById(Long id);
 
-    BookingDTO updateBooking(Integer id, @Valid BookingDTO req);
+    BookingDTO updateBooking(Long id, @Valid BookingDTO req);
 
-    void deleteBooking(Integer id);
+    void deleteBooking(Long id);
 }

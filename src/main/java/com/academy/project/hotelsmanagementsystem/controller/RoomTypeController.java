@@ -26,7 +26,7 @@ public class RoomTypeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoomTypeDTO> getRoomTypeById(@PathVariable Integer id){
+    public ResponseEntity<RoomTypeDTO> getRoomTypeById(@PathVariable Long id){
         return ResponseEntity.ok(roomTypeService.findRoomTypeById(id).orElse(null));
     }
 
@@ -36,7 +36,7 @@ public class RoomTypeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoomTypeDTO> updateRoomType(@PathVariable Integer id,@RequestBody RoomTypeDTO roomType){
+    public ResponseEntity<RoomTypeDTO> updateRoomType(@PathVariable Long id,@RequestBody RoomTypeDTO roomType){
         return ResponseEntity.ok(roomTypeService.updateRoomType(id,roomType));
     }
 }

@@ -32,13 +32,13 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Optional<RoomDTO> findRoomById(Integer id) {
+    public Optional<RoomDTO> findRoomById(Long id) {
         return roomRepository.findById(id)
                 .map(ROOM_MAPPER::toDto);
     }
 
     @Override
-    public RoomDTO updateRoom(Integer id, @Valid RoomDTO req) {
+    public RoomDTO updateRoom(Long id, @Valid RoomDTO req) {
         req.setId(id);
         return findRoomById(id).map(o -> ROOM_MAPPER.toEntity(req))
                 .map(roomRepository::save)
@@ -46,7 +46,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void deleteRoom(Integer id) {
+    public void deleteRoom(Long id) {
 
     }
 }

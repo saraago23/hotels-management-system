@@ -11,8 +11,8 @@ public interface RoomService {
     PageDTO<RoomDTO> findAll(Pageable pageable);
 
     RoomDTO addRoom(@Valid RoomDTO req);
-    Optional<RoomDTO> findRoomById(Integer id);
-    RoomDTO updateRoom(Integer id,@Valid RoomDTO req);
-    void deleteRoom(Integer id);
+    Optional<RoomDTO> findRoomById(Long id);
+    RoomDTO updateRoom(Long id,@Valid RoomDTO req);
+    void deleteRoom(Long id);
 
 }

@@ -33,13 +33,13 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Override
-    public Optional<RoomTypeDTO> findRoomTypeById(Integer id) {
+    public Optional<RoomTypeDTO> findRoomTypeById(Long id) {
         return roomTypeRepository.findById(id)
                 .map(ROOM_TYPE_MAPPER::toDto);
     }
 
     @Override
-    public RoomTypeDTO updateRoomType(Integer id, @Valid RoomTypeDTO req) {
+    public RoomTypeDTO updateRoomType(Long id, @Valid RoomTypeDTO req) {
         req.setId(id);
         return roomTypeRepository.findById(id)
                 .map(o->ROOM_TYPE_MAPPER.toEntity(req))
@@ -48,7 +48,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Override
-    public void deleteRoomType(Integer id) {
+    public void deleteRoomType(Long id) {
 
     }
 }

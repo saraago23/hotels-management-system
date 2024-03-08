@@ -14,7 +14,7 @@ public class RoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private  Integer id;
+    private  Long id;
     @ManyToOne
     @JoinColumn(name = "room_type_id",referencedColumnName = "id")
     private RoomTypeEntity roomType;
