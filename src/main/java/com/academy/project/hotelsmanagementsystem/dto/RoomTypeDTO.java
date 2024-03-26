@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -16,8 +18,8 @@ public class RoomTypeDTO {
     @NotNull(message = "{roomType.validations.type}")
     private String type;
     @NotNull(message = "{roomType.validations.price}")
-    private Integer price;
-
+    private BigDecimal price;
+    private Integer numGuest;
     private String roomDesc;
 
 }

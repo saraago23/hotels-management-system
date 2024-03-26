@@ -27,7 +27,7 @@ public class HotelController {
 
     @GetMapping("/{id}")
     public ResponseEntity<HotelDTO> getHotelById(@PathVariable Long id){
-        return ResponseEntity.ok(hotelService.findHotelById(id).orElse(null));
+        return ResponseEntity.ok(hotelService.findHotelById(id));
     }
 
     @PostMapping

@@ -2,14 +2,20 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.HotelDTO;
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
+import com.academy.project.hotelsmanagementsystem.entity.HotelEntity;
+import com.academy.project.hotelsmanagementsystem.exceptions.GeneralException;
 import com.academy.project.hotelsmanagementsystem.repository.HotelRepository;
 import com.academy.project.hotelsmanagementsystem.service.HotelService;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
+
+import static com.academy.project.hotelsmanagementsystem.mapper.RoomMapper.ROOM_MAPPER;
 import static com.academy.project.hotelsmanagementsystem.utils.PageUtils.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.HotelMapper.*;
 @Validated
@@ -23,25 +29,25 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public HotelDTO addHotel(HotelDTO req) {
-        var entity=hotelRepository.save(HOTEL_MAPPER.toEntity(req));
+    public HotelDTO addHotel(@Valid HotelDTO hotelDTO) {
+        var entity=hotelRepository.save(HOTEL_MAPPER.toEntity(hotelDTO));
         return HOTEL_MAPPER.toDto(entity);
     }
 
     @Override
-    public Optional<HotelDTO> findHotelById(Long id) {
-        return hotelRepository.findById(id)
-                .map(HOTEL_MAPPER::toDto);
+    public HotelDTO findHotelById(Long id) {
+        HotelEntity hotelEntity=hotelRepository.findById(id).orElseThrow(()-> new GeneralException("Hotel with id: " + id + " was not found"));
+        return HOTEL_MAPPER.toDto(hotelEntity);
     }
 
     @Override
-    public HotelDTO updateHotel(Long id, HotelDTO req) {
-        req.setId(id);
-        return hotelRepository.findById(id)
-                .map(o->HOTEL_MAPPER.toEntity(req))
-                .map(hotelRepository::save)
-                .map(HOTEL_MAPPER::toDto)
-                .orElse(null);
+    @Transactional
+    public HotelDTO updateHotel(Long id, @Valid HotelDTO updatedHotel) {
+        if (hotelRepository.existsById(id)) {
+            updatedHotel.setId(id);
+            return HOTEL_MAPPER.toDto(hotelRepository.save(HOTEL_MAPPER.toEntity(updatedHotel)));
+        }
+        throw new GeneralException("Hotel with id: " + id + " was not found");
     }
 
     @Override

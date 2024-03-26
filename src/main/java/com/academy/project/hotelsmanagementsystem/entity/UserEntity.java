@@ -2,6 +2,7 @@ package com.academy.project.hotelsmanagementsystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 import java.time.LocalDate;
 
 @Getter
@@ -30,13 +31,13 @@ public class UserEntity {
     private String email;
     @Column(name="address")
     private String address;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private RoleEntity role;
     @Column(name = "username")
     private String username;
     @Column(name = "password")
     private String password;
-    private boolean deleted;
+    private Boolean deleted;
 
 }

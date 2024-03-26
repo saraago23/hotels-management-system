@@ -1,7 +1,6 @@
 package com.academy.project.hotelsmanagementsystem.room.mockmvc;
 
 import com.academy.project.hotelsmanagementsystem.dto.HotelDTO;
-import com.academy.project.hotelsmanagementsystem.dto.RoleDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoomDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoomTypeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,7 +89,7 @@ public class RoomControllerTest {
         var requestBody = RoomDTO.builder()
                 .roomType(roomType)
                 .hotel(hotel)
-                .isBooked(false)
+                .booked(false)
                 .build();
 
         this.mockMvc.perform(post("/rooms")
@@ -110,7 +109,7 @@ public class RoomControllerTest {
         var requestBody = RoomDTO.builder()
                 .roomType(roomType)
                 .hotel(hotel)
-                .isBooked(false)
+                .booked(false)
                 .build();
 
         this.mockMvc.perform(put("/rooms/{id}",1)

@@ -10,8 +10,8 @@ import java.util.Optional;
 public interface RoleService {
     PageDTO<RoleDTO> findAll(Pageable pageable);
 
-    RoleDTO addRole(@Valid RoleDTO req);
-    Optional<RoleDTO> findRoleById(Long id);
-    RoleDTO updateRole(Long id,@Valid RoleDTO req);
+    RoleDTO addRole(@Valid RoleDTO roleDTO);
+    RoleDTO findRoleById(Long id);
+    RoleDTO updateRole(Long id,@Valid RoleDTO updatedRole);
     void deleteRole(Long id);
 }

@@ -27,7 +27,7 @@ public class RoleController {
 
     @GetMapping("/{id}")
     public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long id){
-        return ResponseEntity.ok(roleService.findRoleById(id).orElse(null));
+        return ResponseEntity.ok(roleService.findRoleById(id));
     }
 
     @PostMapping

@@ -10,9 +10,9 @@ import java.util.Optional;
 public interface RoomTypeService {
     PageDTO<RoomTypeDTO> findAll(Pageable pageable);
 
-    RoomTypeDTO addRoomType(@Valid RoomTypeDTO req);
-    Optional<RoomTypeDTO> findRoomTypeById(Long id);
-    RoomTypeDTO updateRoomType(Long id,@Valid RoomTypeDTO req);
+    RoomTypeDTO addRoomType(@Valid RoomTypeDTO roomTypeDTO);
+    RoomTypeDTO findRoomTypeById(Long id);
+    RoomTypeDTO updateRoomType(Long id,@Valid RoomTypeDTO updatedRoomType);
     void deleteRoomType(Long id);
 
 }

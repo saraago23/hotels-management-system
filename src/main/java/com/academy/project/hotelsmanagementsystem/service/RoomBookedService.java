@@ -10,8 +10,8 @@ import java.util.Optional;
 public interface RoomBookedService {
     PageDTO<RoomBookedDTO> findAll(Pageable pageable);
 
-    RoomBookedDTO addRoomBooked(@Valid RoomBookedDTO req);
-    Optional<RoomBookedDTO> findRoomBookedById(Long id);
-    RoomBookedDTO updateRoomBooked(Long id,@Valid RoomBookedDTO req);
+    RoomBookedDTO addRoomBooked(@Valid RoomBookedDTO roomBookedDTO);
+    RoomBookedDTO findRoomBookedById(Long id);
+    RoomBookedDTO updateRoomBooked(Long id,@Valid RoomBookedDTO updatedRoomBooked);
     void deleteRoomBooked(Long id);
 }

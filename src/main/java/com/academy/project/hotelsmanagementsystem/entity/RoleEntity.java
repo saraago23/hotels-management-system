@@ -20,6 +20,6 @@ public class RoleEntity {
     @Column(name="description")
     private String description;
     @Column(name="deleted")
-    private boolean deleted;
+    private Boolean deleted;
 
 }

@@ -1,6 +1,5 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingDTO {
+public class DisplayBookingDTO {
     //@NotNull
     private Long id;
     @NotNull
@@ -31,7 +30,5 @@ public class BookingDTO {
     private Integer totalNumGuests;
 
     private String specialReq;
-    @JsonIgnore
-    private Boolean deleted;
 
 }

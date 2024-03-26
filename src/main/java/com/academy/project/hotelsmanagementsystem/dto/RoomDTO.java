@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomDTO {
-   // @NotNull(message = "{room.validations.id}")
+    // @NotNull(message = "{room.validations.id}")
     private Long id;
+    @NotNull(message = "{room.validations.roomNr}")
+    private Integer roomNr;
     @NotNull(message = "{room.validations.roomType}")
     private RoomTypeDTO roomType;
     @NotNull(message = "{room.validations.hotel}")
     private HotelDTO hotel;
-    @NotNull(message = "{room.validations.isBooked}")
-    private boolean isBooked;
 
 }

@@ -3,6 +3,8 @@ package com.academy.project.hotelsmanagementsystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -30,7 +32,8 @@ public class HotelEntity {
     @Column(name="phone")
     private String phone;
     @Column(name="star_rating")
-    private Integer starRating;
+    private BigDecimal starRating;
     @Column(name="deleted")
-    private boolean deleted;
+    private Boolean deleted;
+
 }

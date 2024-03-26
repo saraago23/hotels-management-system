@@ -6,20 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomBookedDTO {
+public class CreateRoomBookedDTO {
 
     //@NotNull(message = "{roomBooked.validations.id}")
     private Long id;
     @NotNull(message = "{roomBooked.validations.room}")
-    private RoomDTO room;
+    private Long roomId;
     @NotNull(message = "{roomBooked.validations.booking}")
-    private BookingDTO booking;
+    private Long bookingId;
     @NotNull(message = "{roomBooked.validations.price}")
-    private BigDecimal price;
+    private Integer price;
 }

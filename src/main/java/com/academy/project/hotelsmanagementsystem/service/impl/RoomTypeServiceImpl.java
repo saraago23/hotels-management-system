@@ -2,6 +2,8 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoomTypeDTO;
+import com.academy.project.hotelsmanagementsystem.entity.RoomTypeEntity;
+import com.academy.project.hotelsmanagementsystem.exceptions.GeneralException;
 import com.academy.project.hotelsmanagementsystem.repository.RoomTypeRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoomTypeService;
 import jakarta.validation.Valid;
@@ -10,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Optional;
 
 import static com.academy.project.hotelsmanagementsystem.utils.PageUtils.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.RoomTypeMapper.*;
@@ -27,24 +28,24 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Override
-    public RoomTypeDTO addRoomType(@Valid RoomTypeDTO req) {
-        var entity = roomTypeRepository.save(ROOM_TYPE_MAPPER.toEntity(req));
+    public RoomTypeDTO addRoomType(@Valid RoomTypeDTO roomTypeDTO) {
+        var entity = roomTypeRepository.save(ROOM_TYPE_MAPPER.toEntity(roomTypeDTO));
         return ROOM_TYPE_MAPPER.toDto(entity);
     }
 
     @Override
-    public Optional<RoomTypeDTO> findRoomTypeById(Long id) {
-        return roomTypeRepository.findById(id)
-                .map(ROOM_TYPE_MAPPER::toDto);
+    public RoomTypeDTO findRoomTypeById(Long id) {
+        RoomTypeEntity roomTypeEntity=roomTypeRepository.findById(id).orElseThrow(()-> new GeneralException("Room Type with id: " + id + " was not found"));
+        return ROOM_TYPE_MAPPER.toDto(roomTypeEntity);
     }
 
     @Override
-    public RoomTypeDTO updateRoomType(Long id, @Valid RoomTypeDTO req) {
-        req.setId(id);
-        return roomTypeRepository.findById(id)
-                .map(o->ROOM_TYPE_MAPPER.toEntity(req))
-                .map(roomTypeRepository::save)
-                .map(ROOM_TYPE_MAPPER::toDto).orElse(null);
+    public RoomTypeDTO updateRoomType(Long id, @Valid RoomTypeDTO updatedRoomType) {
+        if (roomTypeRepository.existsById(id)) {
+            updatedRoomType.setId(id);
+            return ROOM_TYPE_MAPPER.toDto(roomTypeRepository.save(ROOM_TYPE_MAPPER.toEntity(updatedRoomType)));
+        }
+        throw new GeneralException("Room Type with id: " + id + " was not found");
     }
 
     @Override

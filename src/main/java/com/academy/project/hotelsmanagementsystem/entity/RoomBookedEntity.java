@@ -3,6 +3,8 @@ package com.academy.project.hotelsmanagementsystem.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class RoomBookedEntity {
     @JoinColumn(name = "booking_id",referencedColumnName = "id")
     private BookingEntity booking;
     @Column(name = "price")
-    private Integer price;
+    private BigDecimal price;
     @Column(name = "deleted")
-    private boolean deleted;
+    private Boolean deleted;
 }

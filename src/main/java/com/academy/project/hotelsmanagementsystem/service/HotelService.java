@@ -10,8 +10,8 @@ import java.util.Optional;
 public interface HotelService {
 
     PageDTO<HotelDTO> findAll(Pageable pageable);
-    HotelDTO addHotel(@Valid HotelDTO req);
-    Optional<HotelDTO> findHotelById(Long id);
-    HotelDTO updateHotel(Long id,@Valid HotelDTO req);
+    HotelDTO addHotel(@Valid HotelDTO hotelDTO);
+    HotelDTO findHotelById(Long id);
+    HotelDTO updateHotel(Long id,@Valid HotelDTO updatedHotel);
     void deleteHotel(Long id);
 }

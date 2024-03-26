@@ -27,7 +27,7 @@ public class RoomBookedController {
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomBookedDTO> getRoomBookedById(@PathVariable Long id){
-        return ResponseEntity.ok(roomBookedService.findRoomBookedById(id).orElse(null));
+        return ResponseEntity.ok(roomBookedService.findRoomBookedById(id));
     }
 
     @PostMapping
