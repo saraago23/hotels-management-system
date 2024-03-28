@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(GeneralException.class)
+/*    @ExceptionHandler(GeneralException.class)
     public ResponseEntity<ModelErrorMessage> handleRecordNotFoundException(GeneralException ex, HttpServletRequest req){
         var response=ModelErrorMessage.builder()
                 .message(ex.getMessage())
                 .path(req.getRequestURI())
-                .statusCode(HttpStatus.NOT_FOUND.value())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.badRequest().body(response);
@@ -28,6 +28,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ModelErrorMessage> handleConstraintViolationException(ConstraintViolationException ex, HttpServletRequest request){
+        var resp = ModelErrorMessage.builder()
+                .message(ex.getMessage()).statusCode(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
+                .path(request.getRequestURI()).build();
+        return ResponseEntity.badRequest().body(resp);
+    }*/
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ModelErrorMessage> handleConstraintViolationException(Exception ex, HttpServletRequest request){
         var resp = ModelErrorMessage.builder()
                 .message(ex.getMessage()).statusCode(HttpStatus.BAD_REQUEST.value())
                 .timestamp(LocalDateTime.now())

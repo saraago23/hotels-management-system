@@ -24,6 +24,7 @@ public class CreateBookingDTO {
     private Integer totalNumGuests;
 
     private String specialReq;
+
     private List<RoomDTO> roomDTOList;
 
 }

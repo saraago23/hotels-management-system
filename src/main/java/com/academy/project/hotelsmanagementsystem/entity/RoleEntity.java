@@ -22,4 +22,6 @@ public class RoleEntity {
     @Column(name="deleted")
     private Boolean deleted;
 
+
+
 }

@@ -7,6 +7,7 @@ import com.academy.project.hotelsmanagementsystem.exceptions.GeneralException;
 import com.academy.project.hotelsmanagementsystem.repository.RoomBookedRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoomBookedService;
 import jakarta.validation.Valid;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,24 +33,7 @@ public class RoomBookedServiceImpl implements RoomBookedService {
 
     @Override
     public RoomBookedDTO addRoomBooked(@Valid RoomBookedDTO roomBookedDTO) {
-        /*List<RoomBookedEntity> bookings = roomBookedRepository.findRoomBookedByRoomNr(roomBookedDTO.getRoom().getRoomNr());
-        boolean isBooked=false;
-        for (RoomBookedEntity booking : bookings) {
-            LocalDateTime existingCheckIn = booking.getBooking().getCheckInTime();
-            LocalDateTime existingCheckOut = booking.getBooking().getCheckOutTime();
-
-            if (existingCheckIn.isBefore(roomBookedDTO.getBooking().getCheckOutTime()) && existingCheckOut.isAfter(roomBookedDTO.getBooking().getCheckInTime())) {
-                isBooked=true;
-                break;
-            }
-        }
-        if (isBooked) {
-            throw new GeneralException("Room with id: " + roomBookedDTO.getRoom().getId() + " is already booked");
-        }
-        roomBookedDTO.getRoom().setBooked(true);
-        var entity = roomBookedRepository.save(ROOM_BOOKED_MAPPER.toEntity(roomBookedDTO));
-        return ROOM_BOOKED_MAPPER.toDto(entity);*/
-        return null;
+        throw new NotImplementedException("This service is not implemented. Please create a new booking if you need more rooms");
     }
 
     @Override

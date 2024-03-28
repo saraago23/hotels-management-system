@@ -8,6 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @RestController
 @RequestMapping("/rooms")
 public class RoomController {
@@ -24,6 +27,11 @@ public class RoomController {
         Pageable pageable= PageRequest.of(page,size);
         return ResponseEntity.ok(roomService.findAll(pageable));
     }
+    @GetMapping("/available")
+    public List<RoomDTO> getAvailableRooms(@RequestParam LocalDateTime checkIn, @RequestParam LocalDateTime checkOut){
+        return roomService.getAvailableRooms(checkIn,checkOut);
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomDTO> getRoomById(@PathVariable Long id){

@@ -2,6 +2,7 @@ package com.academy.project.hotelsmanagementsystem.controller;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoleDTO;
+import com.academy.project.hotelsmanagementsystem.entity.RoleEntity;
 import com.academy.project.hotelsmanagementsystem.service.RoleService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,7 @@ public class RoleController {
 
     @PutMapping("/{id}")
     public ResponseEntity<RoleDTO> updateRole(@PathVariable Long id,@RequestBody RoleDTO role){
+
         return ResponseEntity.ok(roleService.updateRole(id,role));
     }
 }

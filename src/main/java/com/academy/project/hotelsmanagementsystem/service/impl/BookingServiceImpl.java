@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,11 +34,15 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final RoomBookedRepository roomBookedRepository;
     private final RoomRepository roomRepository;
-    private final RoleRepository roleRepository;
 
     @Override
     public PageDTO<BookingDTO> findAll(Pageable pageable) {
-        return toPageImpl(bookingRepository.findAll(pageable), BOOKING_MAPPER);
+        return toPageImpl(bookingRepository.findAllNonDeleted(pageable), BOOKING_MAPPER);
+    }
+
+    @Override
+    public PageDTO<BookingDTO> findAllDeleted(Pageable pageable) {
+        return toPageImpl(bookingRepository.findAllDeleted(pageable), BOOKING_MAPPER);
     }
 
     @Override
@@ -50,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
             throw new GeneralException("Check out time can not be before check in time!");
         }
 
-        List<RoomEntity> roomEntities=bookingDto.getRoomDTOList().stream().map(roomDTO -> roomRepository.findById(roomDTO.getId()).orElseThrow(() -> new GeneralException("Room with id: " + roomDTO.getId() + " is not found!"))).collect(Collectors.toList());
+        List<RoomEntity> roomEntities = bookingDto.getRoomDTOList().stream().map(roomDTO -> roomRepository.findById(roomDTO.getId()).orElseThrow(() -> new GeneralException("Room with id: " + roomDTO.getId() + " is not found!"))).collect(Collectors.toList());
 
         if (!areRoomsAvailable(null, roomEntities, bookingDto.getCheckInTime(), bookingDto.getCheckOutTime())) {
             throw new GeneralException("Check the availability of rooms!");
@@ -113,10 +118,29 @@ public class BookingServiceImpl implements BookingService {
     public BookingDTO findBookingById(Long id) {
         BookingEntity bookingEntity = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("Booking with id: " + id + " was not found"));
 
+        if (bookingEntity.getDeleted()) {
+            throw new GeneralException("This booking no longer exists");
+        }
+
         if (isUserAllowed(bookingEntity.getUser())) {
             throw new GeneralException("You are not allowed to access this feature!");
         }
         return BOOKING_MAPPER.toDto(bookingEntity);
+    }
+
+    @Override
+    public List<BookingDTO> findBookingsByUserId(Long id) {
+
+        if (!userRepository.existsById(id)){
+            throw new GeneralException("This user does not exist");
+        }
+            List<BookingEntity> bookings = bookingRepository.findBookingsByUserId(id);
+        List<BookingDTO> bookingDTOS= new ArrayList<>();
+        for(BookingEntity bookingEntity:bookings){
+            bookingDTOS.add(BOOKING_MAPPER.toDto(bookingEntity));
+        }
+
+        return bookingDTOS;
     }
 
     @Override
@@ -178,6 +202,22 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public void deleteBooking(Long id) {
 
+        BookingEntity bookingToBeDeleted = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("There is no booking with id: " + id + " to be deleted"));
+
+        if(bookingToBeDeleted.getCheckOutTime().isBefore(LocalDateTime.now())){
+            throw new GeneralException("You can not delete a booking that has already happened");
+        }
+        if (bookingToBeDeleted.getCheckInTime().isBefore(LocalDateTime.now())){
+            throw new GeneralException("THe guests have already checked in");
+        }
+        bookingToBeDeleted.setDeleted(true);
+
+        List<RoomBookedEntity> roomsBooked = roomBookedRepository.findRoomBookedByBookingId(id);
+        for (RoomBookedEntity roomBookedEntity : roomsBooked) {
+            roomBookedEntity.setDeleted(true);
+            roomBookedRepository.save(roomBookedEntity);
+        }
+        bookingRepository.save(bookingToBeDeleted);
     }
 
     public Boolean isUserAllowed(UserEntity user) {

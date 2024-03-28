@@ -13,6 +13,5 @@ import java.util.List;
 public interface RoomBookedRepository extends JpaRepository<RoomBookedEntity,Long> {
     List<RoomBookedEntity> findRoomBookedByBookingId(Long bookingId);
     List<RoomBookedEntity> findRoomBookedByRoom(RoomEntity room);
-    @Query("SELECT rb FROM RoomBookedEntity rb JOIN rb.room r WHERE r.roomNr = :roomNr")
-    List<RoomBookedEntity> findRoomBookedByRoomNr(Integer roomNr);
+
 }

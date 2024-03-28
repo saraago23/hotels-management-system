@@ -6,6 +6,7 @@ import com.academy.project.hotelsmanagementsystem.entity.HotelEntity;
 import com.academy.project.hotelsmanagementsystem.exceptions.GeneralException;
 import com.academy.project.hotelsmanagementsystem.repository.HotelRepository;
 import com.academy.project.hotelsmanagementsystem.service.HotelService;
+import com.academy.project.hotelsmanagementsystem.utils.UserUtils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,16 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public HotelDTO findHotelById(Long id) {
-        HotelEntity hotelEntity=hotelRepository.findById(id).orElseThrow(()-> new GeneralException("Hotel with id: " + id + " was not found"));
+
+        HotelEntity hotelEntity = hotelRepository.findById(id).orElseThrow(()->new GeneralException("Hotel with id: " + " does not exist"));
+
+        if (hotelEntity.getDeleted()) {
+            throw new GeneralException("This booking no longer exists");
+        }
+
+        if (UserUtils.getLoggedUser().equals("o")) {
+            throw new GeneralException("You are not allowed to access this feature!");
+        }
         return HOTEL_MAPPER.toDto(hotelEntity);
     }
 

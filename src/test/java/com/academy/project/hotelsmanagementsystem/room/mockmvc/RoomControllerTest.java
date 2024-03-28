@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,7 +38,7 @@ public class RoomControllerTest {
                 .id(2L)
                 .type("Deluxe-Double")
                 .roomDesc("king sized bed")
-                .price(60)
+                .price(BigDecimal.valueOf(60))
                 .build();
 
         hotel=HotelDTO.builder()
@@ -48,7 +50,7 @@ public class RoomControllerTest {
                 .country("Albania")
                 .postCode(7001)
                 .city("Korce")
-                .starRating(5)
+                .starRating(BigDecimal.valueOf(5))
                 .build();
     }
 
@@ -89,7 +91,6 @@ public class RoomControllerTest {
         var requestBody = RoomDTO.builder()
                 .roomType(roomType)
                 .hotel(hotel)
-                .booked(false)
                 .build();
 
         this.mockMvc.perform(post("/rooms")
@@ -109,7 +110,6 @@ public class RoomControllerTest {
         var requestBody = RoomDTO.builder()
                 .roomType(roomType)
                 .hotel(hotel)
-                .booked(false)
                 .build();
 
         this.mockMvc.perform(put("/rooms/{id}",1)
