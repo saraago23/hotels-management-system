@@ -43,6 +43,10 @@ public class BookingController {
     public ResponseEntity<List<BookingDTO>> findBookingsByUserId(@PathVariable Long userId){
         return ResponseEntity.ok(bookingService.findBookingsByUserId(userId));
     }
+    @GetMapping("/my")
+    public ResponseEntity<List<BookingDTO>> findMyBookings(){
+        return ResponseEntity.ok(bookingService.findMyBookings());
+    }
     @PostMapping
     public ResponseEntity<BookingDTO> addBooking(@RequestBody CreateBookingDTO booking){
        return ResponseEntity.ok(bookingService.addBooking(booking));

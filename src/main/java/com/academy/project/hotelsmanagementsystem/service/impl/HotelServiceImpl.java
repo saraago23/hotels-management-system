@@ -41,7 +41,7 @@ public class HotelServiceImpl implements HotelService {
         HotelEntity hotelEntity = hotelRepository.findById(id).orElseThrow(()->new GeneralException("Hotel with id: " + " does not exist"));
 
         if (hotelEntity.getDeleted()) {
-            throw new GeneralException("This booking no longer exists");
+            throw new GeneralException("This hotel no longer exists in the db");
         }
 
         if (UserUtils.getLoggedUser().equals("o")) {

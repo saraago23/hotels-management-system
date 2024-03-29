@@ -18,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDTO addBooking(@Valid CreateBookingDTO bookingDto) {
 
-        UserEntity createdUser = userRepository.findByUsername(UserUtils.getLoggedUser()).orElseThrow(() -> new GeneralException("User: " + UserUtils.getLoggedUser() + " was not found"));
+        UserEntity loggedUser = userRepository.findByUsername(UserUtils.getLoggedUser()).orElseThrow(() -> new GeneralException("User: " + UserUtils.getLoggedUser() + " was not found"));
 
         if (bookingDto.getCheckOutTime().isBefore(bookingDto.getCheckInTime())) {
             throw new GeneralException("Check out time can not be before check in time!");
@@ -70,7 +69,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         BookingEntity newBooking = bookingRepository.save(BOOKING_MAPPER.toEntity(BookingDTO.builder()
-                .user(USER_MAPPER.toDto(createdUser))
+                .user(USER_MAPPER.toDto(loggedUser))
                 .bookingTime(LocalDateTime.now())
                 .checkInTime(bookingDto.getCheckInTime())
                 .checkOutTime(bookingDto.getCheckOutTime())
@@ -118,29 +117,44 @@ public class BookingServiceImpl implements BookingService {
     public BookingDTO findBookingById(Long id) {
         BookingEntity bookingEntity = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("Booking with id: " + id + " was not found"));
 
+        if (isUserAllowed(bookingEntity.getUser())) {
+            throw new GeneralException("You are not allowed to access this feature!");
+        }
+
         if (bookingEntity.getDeleted()) {
             throw new GeneralException("This booking no longer exists");
         }
 
-        if (isUserAllowed(bookingEntity.getUser())) {
-            throw new GeneralException("You are not allowed to access this feature!");
-        }
         return BOOKING_MAPPER.toDto(bookingEntity);
     }
 
     @Override
-    public List<BookingDTO> findBookingsByUserId(Long id) {
+    public List<BookingDTO> findBookingsByUserId(Long userId) {
 
-        if (!userRepository.existsById(id)){
-            throw new GeneralException("This user does not exist");
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new GeneralException("User with id : " + userId + " was not found"));
+        if(isUserAllowed(userEntity)){
+            throw new GeneralException("You have no access over this booking!");
         }
-            List<BookingEntity> bookings = bookingRepository.findBookingsByUserId(id);
-        List<BookingDTO> bookingDTOS= new ArrayList<>();
-        for(BookingEntity bookingEntity:bookings){
-            bookingDTOS.add(BOOKING_MAPPER.toDto(bookingEntity));
-        }
+        List<BookingEntity> bookings = bookingRepository.findBookingsByUser(userEntity);
 
-        return bookingDTOS;
+        List<BookingEntity> nonDeletedBookings=bookings.stream()
+                .filter(bookingEntity -> !bookingEntity.getDeleted())
+                .toList();
+
+        return nonDeletedBookings.stream().map(BOOKING_MAPPER::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingDTO> findMyBookings() {
+
+        UserEntity loggedUser = userRepository.findByUsername(UserUtils.getLoggedUser()).orElseThrow(() -> new GeneralException("User not found on the db"));
+        List<BookingEntity> bookings = bookingRepository.findBookingsByUser(loggedUser);
+
+        List<BookingEntity> nonDeletedBookings=bookings.stream()
+                .filter(bookingEntity -> !bookingEntity.getDeleted())
+                .toList();
+
+        return nonDeletedBookings.stream().map(BOOKING_MAPPER::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -148,7 +162,7 @@ public class BookingServiceImpl implements BookingService {
         BookingEntity bookingToBeUpdated = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("Booking with id: " + id + " does not exist"));
 
         if (isUserAllowed(bookingToBeUpdated.getUser())) {
-            throw new GeneralException("You are not allowed to access this feature!");
+            throw new GeneralException("You have no access over this booking!");
         }
 
         if (createUpdateBookingDTO.getCheckOutTime().isBefore(createUpdateBookingDTO.getCheckInTime())) {
@@ -181,6 +195,7 @@ public class BookingServiceImpl implements BookingService {
         return BOOKING_MAPPER.toDto(bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto)));
     }
 
+
    /* private Boolean areRoomsAvailable(BookingEntity booking, List<RoomBookedEntity> bookedRooms, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
         boolean flag = true;
 
@@ -198,16 +213,19 @@ public class BookingServiceImpl implements BookingService {
         }
         return flag;
     }*/
-
     @Override
     public void deleteBooking(Long id) {
 
         BookingEntity bookingToBeDeleted = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("There is no booking with id: " + id + " to be deleted"));
 
-        if(bookingToBeDeleted.getCheckOutTime().isBefore(LocalDateTime.now())){
+       if(isUserAllowed(bookingToBeDeleted.getUser())){
+           throw new GeneralException("You have no access over this booking!");
+       }
+
+        if (bookingToBeDeleted.getCheckOutTime().isBefore(LocalDateTime.now())) {
             throw new GeneralException("You can not delete a booking that has already happened");
         }
-        if (bookingToBeDeleted.getCheckInTime().isBefore(LocalDateTime.now())){
+        if (bookingToBeDeleted.getCheckInTime().isBefore(LocalDateTime.now())) {
             throw new GeneralException("THe guests have already checked in");
         }
         bookingToBeDeleted.setDeleted(true);

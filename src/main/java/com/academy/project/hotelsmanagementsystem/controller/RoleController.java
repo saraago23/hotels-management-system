@@ -6,6 +6,8 @@ import com.academy.project.hotelsmanagementsystem.entity.RoleEntity;
 import com.academy.project.hotelsmanagementsystem.service.RoleService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +22,17 @@ public class RoleController {
     }
 
     @GetMapping
-    public ResponseEntity<PageDTO<RoleDTO>> getRoles(@RequestParam(required = false, defaultValue = "0") Integer page,
+    public ResponseEntity<PageDTO<RoleDTO>> getNonDeletedRoles(@RequestParam(required = false, defaultValue = "0") Integer page,
                                                       @RequestParam(required = false,defaultValue = "10") Integer size){
         Pageable pageable= PageRequest.of(page,size);
-        return ResponseEntity.ok(roleService.findAll(pageable));
+        return ResponseEntity.ok(roleService.findAllNonDeleted(pageable));
+    }
+
+    @GetMapping("/deleted")
+    public ResponseEntity<PageDTO<RoleDTO>> getDeletedRoles(@RequestParam(required = false, defaultValue = "0") Integer page,
+                                                     @RequestParam(required = false,defaultValue = "10") Integer size){
+        Pageable pageable= PageRequest.of(page,size);
+        return ResponseEntity.ok(roleService.findAllDeleted(pageable));
     }
 
     @GetMapping("/{id}")
@@ -40,5 +49,11 @@ public class RoleController {
     public ResponseEntity<RoleDTO> updateRole(@PathVariable Long id,@RequestBody RoleDTO role){
 
         return ResponseEntity.ok(roleService.updateRole(id,role));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRole(@PathVariable Long id){
+        roleService.deleteRole(id);
+      return new ResponseEntity<>(HttpStatus.OK);
     }
 }

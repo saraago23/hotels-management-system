@@ -17,7 +17,8 @@ public interface BookingService {
     BookingDTO addBooking(@Valid CreateBookingDTO bookingDTO);
 
     BookingDTO findBookingById(Long id);
-    List<BookingDTO> findBookingsByUserId(Long id);
+    List<BookingDTO> findBookingsByUserId(Long userId);
+    List<BookingDTO> findMyBookings();
 
     BookingDTO updateBooking(Long id, @Valid UpdateBookingDTO createUpdateBookingDTO);
 

@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     @Override
     public void deleteUser(Long id) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new GeneralException("User with id: " + id + " was not found"));
-        List<BookingEntity> userBookings = bookingRepository.findBookingsByUserId(id);
+        List<BookingEntity> userBookings = bookingRepository.findBookingsByUser(userEntity);
         boolean flag = true;
         for (BookingEntity booking : userBookings) {
             if (LocalDateTime.now().isBefore(booking.getCheckInTime()) || LocalDateTime.now().isAfter(booking.getCheckOutTime())) {
@@ -126,7 +126,12 @@ public class UserServiceImpl implements UserService , UserDetailsService {
         if (!flag) {
             throw new GeneralException("Can not delete user with active bookings.");
         }
+
+        if (!(UserUtils.getLoggedUserRole().contains("ADMIN") || UserUtils.getLoggedUser().equals(userEntity.getUsername()))) {
+            throw new GeneralException("You have no access over this user");
+        }
         userEntity.setDeleted(true);
+        userRepository.save(userEntity);
     }
 
     @Override
