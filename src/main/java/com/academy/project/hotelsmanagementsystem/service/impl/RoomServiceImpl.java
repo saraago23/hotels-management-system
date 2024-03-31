@@ -45,7 +45,11 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDTO addRoom(@Valid RoomDTO roomDTO) {
 
-        HotelEntity hotelEntity = hotelRepository.findById(roomDTO.getHotel().getId()).orElseThrow(() -> new GeneralException("This hotel does not exist in the system"));
+        HotelEntity hotelEntity = hotelRepository.findById(roomDTO.getHotel().getId()).orElseThrow(() -> new GeneralException("This hotel does not exist on the system"));
+
+        if(hotelEntity.getDeleted()){
+            throw new GeneralException("This hotel does not exist on the system");
+        }
 
         if (roomRepository.getRoomEntitiesByHotel_Id(hotelEntity.getId()).size() >= hotelEntity.getRoomsNr()) {
             throw new GeneralException("You cannot add a new room for this hotel. Its capacity is: " + hotelEntity.getRoomsNr() + " rooms");
@@ -54,6 +58,9 @@ public class RoomServiceImpl implements RoomService {
         RoomTypeEntity roomTypeEntity = roomTypeRepository.findById(roomDTO.getRoomType().getId())
                 .orElseThrow(() -> new GeneralException("This room type does not exist on the system"));
 
+        if(roomTypeEntity.getDeleted()){
+            throw new GeneralException("This room type does not exist on the system");
+        }
 
         List<Integer> usedRoomNumbers = roomRepository.findRoomNumbersByHotelId(hotelEntity.getId());
         if (usedRoomNumbers.contains(roomDTO.getRoomNr())) {
@@ -94,6 +101,9 @@ public class RoomServiceImpl implements RoomService {
 
         HotelEntity hotelEntity = hotelRepository.findById(updatedRoom.getHotel().getId()).orElseThrow(() -> new GeneralException("This hotel does not exist in the system"));
 
+        if(hotelEntity.getDeleted()){
+            throw new GeneralException("This hotel does not exist in the system");
+        }
         if (roomRepository.getRoomEntitiesByHotel_Id(hotelEntity.getId()).size() >= hotelEntity.getRoomsNr()) {
             throw new GeneralException("You cannot add a new room for this hotel. Its capacity is: " + hotelEntity.getRoomsNr() + " rooms");
         }
@@ -101,6 +111,9 @@ public class RoomServiceImpl implements RoomService {
         RoomTypeEntity roomTypeEntity = roomTypeRepository.findById(updatedRoom.getRoomType().getId())
                 .orElseThrow(() -> new GeneralException("This room type does not exist on the system"));
 
+        if(roomTypeEntity.getDeleted()){
+            throw new GeneralException("This hotel does not exist in the system");
+        }
 
         List<Integer> usedRoomNumbers = roomRepository.findRoomNumbersByHotelId(hotelEntity.getId());
         if (usedRoomNumbers.contains(updatedRoom.getRoomNr())) {

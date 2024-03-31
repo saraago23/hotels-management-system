@@ -18,12 +18,14 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.academy.project.hotelsmanagementsystem.utils.PageUtils.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.BookingMapper.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.UserMapper.*;
+import static com.academy.project.hotelsmanagementsystem.mapper.RoomMapper.*;
 
 @Service
 @Validated
@@ -158,7 +160,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDTO updateBooking(Long id, @Valid UpdateBookingDTO updateBookingDTO) {
+
+    public BookingDTO updateBooking(Long id, @Valid CreateBookingDTO updateBookingDTO) {
         BookingEntity bookingToBeUpdated = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("Booking with id: " + id + " does not exist"));
 
         if (isUserAllowed(bookingToBeUpdated.getUser())) {
@@ -192,8 +195,36 @@ public class BookingServiceImpl implements BookingService {
         updatedDto.setDeleted(false);
         updatedDto.setSpecialReq(updateBookingDTO.getSpecialReq());
 
+        List<RoomEntity> newRooms = updateBookingDTO.getRoomDTOList().stream().map(ROOM_MAPPER::toEntity).toList();
+
+        List<BookingEntity> existingBookings = bookingRepository.findAllByCheckInTimeAfterAndCheckOutTimeBefore(updateBookingDTO.getCheckInTime(), updateBookingDTO.getCheckOutTime());
+
+        List<RoomBookedEntity> roomsCurrentlyBooked = new ArrayList<>();
+
+        existingBookings.forEach(booking -> {
+            List<RoomBookedEntity> roomBookedEntities = roomBookedRepository.findRoomBookedByBookingId(booking.getId());
+            roomBookedEntities.stream().map(roomsCurrentlyBooked::add);
+        });
+        boolean flag = true;
+
+        for (RoomBookedEntity roomBooked : roomsCurrentlyBooked) {
+            for (RoomEntity room : newRooms) {
+                if (roomBooked.getRoom().equals(room)) {
+                    flag = false;
+                }
+            }
+        }
+
+        List<RoomBookedEntity> oldRoomsBooked = roomBookedRepository.findRoomBookedByBookingId(bookingToBeUpdated.getId());
+        for (RoomBookedEntity roomBooked : oldRoomsBooked) {
+            for (RoomEntity room : newRooms) {
+                roomBooked.setRoom(room);
+            }
+            roomBookedRepository.save(roomBooked);
+        }
         return BOOKING_MAPPER.toDto(bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto)));
     }
+
 
     /* private Boolean areRoomsAvailable(BookingEntity booking, List<RoomBookedEntity> bookedRooms, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
          boolean flag = true;
@@ -217,7 +248,7 @@ public class BookingServiceImpl implements BookingService {
 
         BookingEntity bookingToBeDeleted = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("There is no booking with id: " + id + " to be deleted"));
 
-        if (bookingToBeDeleted.getDeleted()){
+        if (bookingToBeDeleted.getDeleted()) {
             throw new GeneralException("No booking with id: " + id + " was found");
         }
 

@@ -24,7 +24,7 @@ public class RoomBookedController {
         Pageable pageable= PageRequest.of(page,size);
         return ResponseEntity.ok(roomBookedService.findAll(pageable));
     }
-    @GetMapping
+    @GetMapping("/deleted")
     public ResponseEntity<PageDTO<RoomBookedDTO>> getDeletedRoomsBooked(@RequestParam(required = false, defaultValue = "0") Integer page,
                                                                  @RequestParam(required = false,defaultValue = "10") Integer size){
         Pageable pageable= PageRequest.of(page,size);

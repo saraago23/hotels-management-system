@@ -20,7 +20,7 @@ public interface BookingService {
     List<BookingDTO> findBookingsByUserId(Long userId);
     List<BookingDTO> findMyBookings();
 
-    BookingDTO updateBooking(Long id, @Valid UpdateBookingDTO updateBookingDTO);
+    BookingDTO updateBooking(Long id, @Valid CreateBookingDTO updateBookingDTO);
 
     void deleteBooking(Long id);
 }
