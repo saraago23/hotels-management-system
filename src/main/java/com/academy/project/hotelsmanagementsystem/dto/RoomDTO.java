@@ -1,5 +1,6 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,5 +20,7 @@ public class RoomDTO {
     private RoomTypeDTO roomType;
     @NotNull(message = "{room.validations.hotel}")
     private HotelDTO hotel;
+    @JsonIgnore
+    private Boolean deleted;
 
 }

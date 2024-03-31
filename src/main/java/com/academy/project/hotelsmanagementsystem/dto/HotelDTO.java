@@ -1,4 +1,6 @@
 package com.academy.project.hotelsmanagementsystem.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -25,8 +27,9 @@ public class HotelDTO {
     @NotNull(message = "{hotel.validations.roomsNr}")
     private Integer roomsNr;
     @NotNull(message = "{hotel.validations.phone}")
-    @Pattern(regexp = "^\\+355\\s(68|69)\\d{7}$\n",message = "{hotel.validations.phone.regexp}")
+    //@Pattern(regexp = "^\\+355\\s(68|69)\\d{7}$\n",message = "{hotel.validations.phone.regexp}")
     private String phone;
     private BigDecimal starRating;
-
+    @JsonIgnore
+    private Boolean deleted;
 }

@@ -53,8 +53,8 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookingDTO> updateBooking(@PathVariable Long id, @RequestBody UpdateBookingDTO createUpdateBookingDTO){
-        return ResponseEntity.ok(bookingService.updateBooking(id, createUpdateBookingDTO));
+    public ResponseEntity<BookingDTO> updateBooking(@PathVariable Long id, @RequestBody UpdateBookingDTO updateBookingDTO){
+        return ResponseEntity.ok(bookingService.updateBooking(id, updateBookingDTO));
     }
 
     @DeleteMapping("/{id}")

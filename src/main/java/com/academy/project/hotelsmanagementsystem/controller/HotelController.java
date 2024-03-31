@@ -5,6 +5,7 @@ import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.service.HotelService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +39,11 @@ public class HotelController {
     @PutMapping("/{id}")
     public ResponseEntity<HotelDTO> updateHotel(@PathVariable Long id,@RequestBody HotelDTO hotel){
         return ResponseEntity.ok(hotelService.updateHotel(id,hotel));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteHotel(@PathVariable Long id){
+        hotelService.deleteHotel(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -132,12 +132,12 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDTO> findBookingsByUserId(Long userId) {
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new GeneralException("User with id : " + userId + " was not found"));
-        if(isUserAllowed(userEntity)){
+        if (isUserAllowed(userEntity)) {
             throw new GeneralException("You have no access over this booking!");
         }
         List<BookingEntity> bookings = bookingRepository.findBookingsByUser(userEntity);
 
-        List<BookingEntity> nonDeletedBookings=bookings.stream()
+        List<BookingEntity> nonDeletedBookings = bookings.stream()
                 .filter(bookingEntity -> !bookingEntity.getDeleted())
                 .toList();
 
@@ -150,7 +150,7 @@ public class BookingServiceImpl implements BookingService {
         UserEntity loggedUser = userRepository.findByUsername(UserUtils.getLoggedUser()).orElseThrow(() -> new GeneralException("User not found on the db"));
         List<BookingEntity> bookings = bookingRepository.findBookingsByUser(loggedUser);
 
-        List<BookingEntity> nonDeletedBookings=bookings.stream()
+        List<BookingEntity> nonDeletedBookings = bookings.stream()
                 .filter(bookingEntity -> !bookingEntity.getDeleted())
                 .toList();
 
@@ -158,14 +158,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDTO updateBooking(Long id, @Valid UpdateBookingDTO createUpdateBookingDTO) {
+    public BookingDTO updateBooking(Long id, @Valid UpdateBookingDTO updateBookingDTO) {
         BookingEntity bookingToBeUpdated = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("Booking with id: " + id + " does not exist"));
 
         if (isUserAllowed(bookingToBeUpdated.getUser())) {
             throw new GeneralException("You have no access over this booking!");
         }
 
-        if (createUpdateBookingDTO.getCheckOutTime().isBefore(createUpdateBookingDTO.getCheckInTime())) {
+        if (updateBookingDTO.getCheckOutTime().isBefore(updateBookingDTO.getCheckInTime())) {
             throw new GeneralException("Check out time can not be before check in time!");
         }
 
@@ -173,7 +173,7 @@ public class BookingServiceImpl implements BookingService {
 
         List<RoomEntity> roomEntities = bookedRooms.stream().map(RoomBookedEntity::getRoom).toList();
 
-        if (!areRoomsAvailable(bookingToBeUpdated, roomEntities, createUpdateBookingDTO.getCheckInTime(), createUpdateBookingDTO.getCheckOutTime())) {
+        if (!areRoomsAvailable(bookingToBeUpdated, roomEntities, updateBookingDTO.getCheckInTime(), updateBookingDTO.getCheckOutTime())) {
             throw new GeneralException("Rooms are not available for requested dates");
         }
 
@@ -181,46 +181,49 @@ public class BookingServiceImpl implements BookingService {
                 .mapToInt(roomBookedEntity -> roomBookedEntity.getRoom().getRoomType().getNumGuest())
                 .sum();
 
-        if (createUpdateBookingDTO.getTotalNumGuests() > maxAllowedGuests) {
+        if (updateBookingDTO.getTotalNumGuests() > maxAllowedGuests) {
             throw new GeneralException("You have exceeded the number of guests!");
         }
 
         BookingDTO updatedDto = BOOKING_MAPPER.toDto(bookingToBeUpdated);
-        updatedDto.setCheckOutTime(createUpdateBookingDTO.getCheckOutTime());
-        updatedDto.setCheckInTime(createUpdateBookingDTO.getCheckInTime());
-        updatedDto.setTotalNumGuests(createUpdateBookingDTO.getTotalNumGuests());
+        updatedDto.setCheckOutTime(updateBookingDTO.getCheckOutTime());
+        updatedDto.setCheckInTime(updateBookingDTO.getCheckInTime());
+        updatedDto.setTotalNumGuests(updateBookingDTO.getTotalNumGuests());
         updatedDto.setDeleted(false);
-        updatedDto.setSpecialReq(createUpdateBookingDTO.getSpecialReq());
+        updatedDto.setSpecialReq(updateBookingDTO.getSpecialReq());
 
         return BOOKING_MAPPER.toDto(bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto)));
     }
 
+    /* private Boolean areRoomsAvailable(BookingEntity booking, List<RoomBookedEntity> bookedRooms, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
+         boolean flag = true;
 
-   /* private Boolean areRoomsAvailable(BookingEntity booking, List<RoomBookedEntity> bookedRooms, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
-        boolean flag = true;
-
-        for (RoomBookedEntity roomBooked : bookedRooms) {
-            List<RoomBookedEntity> roomBookings = roomBookedRepository.findRoomBookedByRoom(roomBooked.getRoom());
-            for (RoomBookedEntity rb : roomBookings) {
-                if (rb.getBooking() != booking) {
-                    var bookingOfRoom = rb.getBooking();
-                    if (!((checkInTime.isBefore(bookingOfRoom.getCheckInTime()) && checkOutTime.isBefore(bookingOfRoom.getCheckInTime()))
-                            || (checkInTime.isAfter(bookingOfRoom.getCheckOutTime()) && checkOutTime.isAfter(bookingOfRoom.getCheckOutTime())))) {
-                        flag = false;
-                    }
-                }
-            }
-        }
-        return flag;
-    }*/
+         for (RoomBookedEntity roomBooked : bookedRooms) {
+             List<RoomBookedEntity> roomBookings = roomBookedRepository.findRoomBookedByRoom(roomBooked.getRoom());
+             for (RoomBookedEntity rb : roomBookings) {
+                 if (rb.getBooking() != booking) {
+                     var bookingOfRoom = rb.getBooking();
+                     if (!((checkInTime.isBefore(bookingOfRoom.getCheckInTime()) && checkOutTime.isBefore(bookingOfRoom.getCheckInTime()))
+                             || (checkInTime.isAfter(bookingOfRoom.getCheckOutTime()) && checkOutTime.isAfter(bookingOfRoom.getCheckOutTime())))) {
+                         flag = false;
+                     }
+                 }
+             }
+         }
+         return flag;
+     }*/
     @Override
     public void deleteBooking(Long id) {
 
         BookingEntity bookingToBeDeleted = bookingRepository.findById(id).orElseThrow(() -> new GeneralException("There is no booking with id: " + id + " to be deleted"));
 
-       if(isUserAllowed(bookingToBeDeleted.getUser())){
-           throw new GeneralException("You have no access over this booking!");
-       }
+        if (bookingToBeDeleted.getDeleted()){
+            throw new GeneralException("No booking with id: " + id + " was found");
+        }
+
+        if (isUserAllowed(bookingToBeDeleted.getUser())) {
+            throw new GeneralException("You have no access over this booking!");
+        }
 
         if (bookingToBeDeleted.getCheckOutTime().isBefore(LocalDateTime.now())) {
             throw new GeneralException("You can not delete a booking that has already happened");
@@ -231,6 +234,7 @@ public class BookingServiceImpl implements BookingService {
         bookingToBeDeleted.setDeleted(true);
 
         List<RoomBookedEntity> roomsBooked = roomBookedRepository.findRoomBookedByBookingId(id);
+
         for (RoomBookedEntity roomBookedEntity : roomsBooked) {
             roomBookedEntity.setDeleted(true);
             roomBookedRepository.save(roomBookedEntity);

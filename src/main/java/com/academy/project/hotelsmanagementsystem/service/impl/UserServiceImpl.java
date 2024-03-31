@@ -115,8 +115,11 @@ public class UserServiceImpl implements UserService , UserDetailsService {
 
     @Override
     public void deleteUser(Long id) {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new GeneralException("User with id: " + id + " was not found"));
-        List<BookingEntity> userBookings = bookingRepository.findBookingsByUser(userEntity);
+        UserEntity userToBeDeleted = userRepository.findById(id).orElseThrow(() -> new GeneralException("User with id: " + id + " was not found"));
+        if (userToBeDeleted.getDeleted()){
+            throw new GeneralException("No user with id: " + id + " was found on the db");
+        }
+        List<BookingEntity> userBookings = bookingRepository.findBookingsByUser(userToBeDeleted);
         boolean flag = true;
         for (BookingEntity booking : userBookings) {
             if (LocalDateTime.now().isBefore(booking.getCheckInTime()) || LocalDateTime.now().isAfter(booking.getCheckOutTime())) {
@@ -127,11 +130,11 @@ public class UserServiceImpl implements UserService , UserDetailsService {
             throw new GeneralException("Can not delete user with active bookings.");
         }
 
-        if (!(UserUtils.getLoggedUserRole().contains("ADMIN") || UserUtils.getLoggedUser().equals(userEntity.getUsername()))) {
+        if (!(UserUtils.getLoggedUserRole().contains("ADMIN") || UserUtils.getLoggedUser().equals(userToBeDeleted.getUsername()))) {
             throw new GeneralException("You have no access over this user");
         }
-        userEntity.setDeleted(true);
-        userRepository.save(userEntity);
+        userToBeDeleted.setDeleted(true);
+        userRepository.save(userToBeDeleted);
     }
 
     @Override

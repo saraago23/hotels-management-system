@@ -69,6 +69,11 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void deleteRole(Long id) {
         RoleEntity roleToBeDeleted = roleRepository.findById(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
+
+        if (roleToBeDeleted.getDeleted()){
+            throw new GeneralException("No role with id: " + id + " was found on the db");
+        }
+
         if (!userRepository.findByRoleId(id).isEmpty()) {
             throw new GeneralException("You can not delete a role with existing users");
         }
