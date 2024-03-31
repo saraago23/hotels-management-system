@@ -30,11 +30,13 @@ public class RoleServiceImpl implements RoleService {
     public PageDTO<RoleDTO> findAllNonDeleted(Pageable pageable) {
         return toPageImpl(roleRepository.findAllNonDeleted(pageable), ROLE_MAPPER);
     }
+
     //admin
     @Override
     public PageDTO<RoleDTO> findAllDeleted(Pageable pageable) {
         return toPageImpl(roleRepository.findAllDeleted(pageable), ROLE_MAPPER);
     }
+
     //admin
     @Override
     public RoleDTO addRole(@Valid RoleDTO roleDTO) {
@@ -46,6 +48,7 @@ public class RoleServiceImpl implements RoleService {
 
         return ROLE_MAPPER.toDto(roleRepository.save(newRole));
     }
+
     //admin
     @Override
     public RoleDTO findRoleById(Long id) {
@@ -55,22 +58,28 @@ public class RoleServiceImpl implements RoleService {
         }
         return ROLE_MAPPER.toDto(roleEntity);
     }
+
     //admin
     @Override
     public RoleDTO updateRole(Long id, @Valid RoleDTO updatedRole) {
-
         RoleEntity roleToBeUpdated = roleRepository.findById(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
+
+        if (roleToBeUpdated.getDeleted()) {
+            throw new GeneralException("No role with id: " + id + " was found on the db");
+        }
+
         roleToBeUpdated.setDescription(updatedRole.getDescription());
 
         return ROLE_MAPPER.toDto(roleRepository.save(roleToBeUpdated));
 
     }
+
     //admin
     @Override
     public void deleteRole(Long id) {
         RoleEntity roleToBeDeleted = roleRepository.findById(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
 
-        if (roleToBeDeleted.getDeleted()){
+        if (roleToBeDeleted.getDeleted()) {
             throw new GeneralException("No role with id: " + id + " was found on the db");
         }
 

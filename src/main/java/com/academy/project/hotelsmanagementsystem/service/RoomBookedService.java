@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface RoomBookedService {
     PageDTO<RoomBookedDTO> findAll(Pageable pageable);
+    PageDTO<RoomBookedDTO> findAllDeleted(Pageable pageable);
 
     RoomBookedDTO addRoomBooked(@Valid RoomBookedDTO roomBookedDTO);
     RoomBookedDTO findRoomBookedById(Long id);

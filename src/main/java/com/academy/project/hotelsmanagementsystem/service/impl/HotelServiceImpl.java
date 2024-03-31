@@ -62,6 +62,10 @@ public class HotelServiceImpl implements HotelService {
     public HotelDTO updateHotel(Long id, @Valid HotelDTO updatedHotel) {
         HotelEntity hotelToBeUpdated = hotelRepository.findById(id).orElseThrow(() -> new GeneralException("Hotel with id: " + id + " was not found"));
 
+        if (hotelToBeUpdated.getDeleted()){
+            throw new GeneralException("No hotel with id: " + id + " was found on the db");
+        }
+
         HotelDTO hotelToBeUpdatedDto = HOTEL_MAPPER.toDto(hotelToBeUpdated);
         hotelToBeUpdatedDto.setHotelName(updatedHotel.getHotelName());
         hotelToBeUpdatedDto.setAddress(updatedHotel.getAddress());

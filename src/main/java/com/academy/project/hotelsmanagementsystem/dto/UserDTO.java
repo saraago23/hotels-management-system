@@ -1,6 +1,9 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
+import com.academy.project.hotelsmanagementsystem.annotations.AdultAge;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +20,8 @@ public class UserDTO {
     private Long id;
     private String firstName;
     private String lastName;
+    @Past(message = "Birthdate must be in the past")
+    @AdultAge
     private LocalDate birthDate;
     private char gender;
     private String phone;

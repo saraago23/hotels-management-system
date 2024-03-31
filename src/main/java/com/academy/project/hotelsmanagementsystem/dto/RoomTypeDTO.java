@@ -1,5 +1,6 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,5 +22,7 @@ public class RoomTypeDTO {
     private BigDecimal price;
     private Integer numGuest;
     private String roomDesc;
+    @JsonIgnore
+    private Boolean deleted;
 
 }

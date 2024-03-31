@@ -88,6 +88,10 @@ public class RoomServiceImpl implements RoomService {
 
         RoomEntity roomToBeUpdated = roomRepository.findById(id).orElseThrow(() -> new GeneralException("No room with id: " + id + " was found"));
 
+        if (roomToBeUpdated.getDeleted()) {
+            throw new GeneralException("No room with id: " + id + " was found on the db");
+        }
+
         HotelEntity hotelEntity = hotelRepository.findById(updatedRoom.getHotel().getId()).orElseThrow(() -> new GeneralException("This hotel does not exist in the system"));
 
         if (roomRepository.getRoomEntitiesByHotel_Id(hotelEntity.getId()).size() >= hotelEntity.getRoomsNr()) {

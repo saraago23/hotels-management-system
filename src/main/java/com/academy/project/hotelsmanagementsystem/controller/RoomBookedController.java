@@ -24,6 +24,12 @@ public class RoomBookedController {
         Pageable pageable= PageRequest.of(page,size);
         return ResponseEntity.ok(roomBookedService.findAll(pageable));
     }
+    @GetMapping
+    public ResponseEntity<PageDTO<RoomBookedDTO>> getDeletedRoomsBooked(@RequestParam(required = false, defaultValue = "0") Integer page,
+                                                                 @RequestParam(required = false,defaultValue = "10") Integer size){
+        Pageable pageable= PageRequest.of(page,size);
+        return ResponseEntity.ok(roomBookedService.findAllDeleted(pageable));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomBookedDTO> getRoomBookedById(@PathVariable Long id){

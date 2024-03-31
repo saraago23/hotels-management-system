@@ -35,7 +35,12 @@ public class RoomBookedServiceImpl implements RoomBookedService {
     //admin
     @Override
     public PageDTO<RoomBookedDTO> findAll(Pageable pageable) {
-        return toPageImpl(roomBookedRepository.findAll(pageable), ROOM_BOOKED_MAPPER);
+        return toPageImpl(roomBookedRepository.findAllNonDeleted(pageable), ROOM_BOOKED_MAPPER);
+    }
+
+    @Override
+    public PageDTO<RoomBookedDTO> findAllDeleted(Pageable pageable) {
+        return toPageImpl(roomBookedRepository.findAllDeleted(pageable), ROOM_BOOKED_MAPPER);
     }
 
     @Override
@@ -62,15 +67,17 @@ public class RoomBookedServiceImpl implements RoomBookedService {
     public RoomBookedDTO updateRoomBooked(Long id, @Valid RoomBookedDTO updatedRoomBooked) {
         RoomBookedEntity roomBookedToBeUpdated = roomBookedRepository.findById(id).orElseThrow(() -> new GeneralException("No booked room with id: " + id + " was found"));
 
+        if (roomBookedToBeUpdated.getDeleted()) {
+            throw new GeneralException("No booked room with id: " + id + " was found on the db");
+        }
+
         if (!(UserUtils.getLoggedUserRole().contains("ADMIN") || UserUtils.getLoggedUser().equals(roomBookedToBeUpdated.getBooking().getUser().getUsername()))) {
             throw new GeneralException("You have no access to delete this booked room");
         }
 
-        //roomBookedToBeUpdated.setRoom();
-
         List<BookingEntity> existingBookings = bookingRepository.findAllByCheckInTimeAfterAndCheckOutTimeBefore(roomBookedToBeUpdated.getBooking().getCheckInTime(), roomBookedToBeUpdated.getBooking().getCheckOutTime());
 
-        List<RoomEntity> availableRooms=new ArrayList<>();
+        List<RoomEntity> availableRooms = new ArrayList<>();
 
         existingBookings.forEach(booking -> {
             List<RoomBookedEntity> roomBookedEntities = roomBookedRepository.findRoomBookedByBookingId(booking.getId());
@@ -79,10 +86,7 @@ public class RoomBookedServiceImpl implements RoomBookedService {
             });
         });
 
-
-
         throw new NotImplementedException("This service is not implemented. Please create a new booking if you need more rooms");
-
     }
 
     @Override
