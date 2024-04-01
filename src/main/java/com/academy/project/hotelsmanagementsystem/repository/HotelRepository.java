@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface HotelRepository extends JpaRepository<HotelEntity,Long> {
+import java.util.Optional;
 
+@Repository
+public interface HotelRepository extends JpaRepository<HotelEntity, Long> {
+
+    Optional<HotelEntity> findByIdAndDeletedFalse(Long id);
     @Query("SELECT h FROM HotelEntity h WHERE h.deleted=false ")
     Page<HotelEntity> findAllNonDeleted(Pageable pageable);
 }

@@ -8,15 +8,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
 
-    List<RoomEntity> getRoomEntitiesByHotel_Id(Long id);
+    Optional<RoomEntity> findByIdAndDeletedFalse(Long id);
+    List<RoomEntity> getRoomEntitiesByHotel_IdAndDeletedFalse(Long id);
 
     @Query("SELECT r FROM RoomEntity r WHERE r.deleted=false ")
     Page<RoomEntity> findAllNonDeleted(Pageable pageable);
 
+    @Query("SELECT r FROM RoomEntity r WHERE r.deleted=false ")
+    List<RoomEntity> findAllNonDeleted();
+
     @Query("SELECT r.roomNr FROM RoomEntity r WHERE r.hotel.id = :hotelId")
-    List<Integer> findRoomNumbersByHotelId(Long hotelId);
+    List<Integer> findRoomNumbersByHotelIdAndDeletedFalse(Long hotelId);
 }

@@ -1,5 +1,6 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,4 +23,6 @@ public class RoomBookedDTO {
     private BookingDTO booking;
     @NotNull(message = "{roomBooked.validations.price}")
     private BigDecimal price;
+    @JsonIgnore
+    private Boolean deleted;
 }

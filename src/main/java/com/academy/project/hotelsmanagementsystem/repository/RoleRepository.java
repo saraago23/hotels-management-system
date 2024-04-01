@@ -8,8 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
+    Optional<RoleEntity> findByIdAndDeletedFalse(Long id);
 
     @Query("SELECT r FROM RoleEntity r WHERE r.deleted=false ")
     Page<RoleEntity> findAllNonDeleted(Pageable pageable);

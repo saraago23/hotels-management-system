@@ -10,17 +10,19 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<BookingEntity,Long> {
 
+    Optional<BookingEntity> findByIdAndDeletedFalse(Long id);
     @Query("SELECT b FROM BookingEntity b WHERE b.deleted=false ")
     Page<BookingEntity>findAllNonDeleted(Pageable pageable);
     @Query("SELECT b FROM BookingEntity b WHERE b.deleted=true ")
 
     Page<BookingEntity>findAllDeleted(Pageable pageable);
 
-    List<BookingEntity> findBookingsByUser(UserEntity userEntity);
+    List<BookingEntity> findBookingsByUserAndDeletedFalse(UserEntity userEntity);
 
-    List<BookingEntity> findAllByCheckInTimeAfterAndCheckOutTimeBefore(LocalDateTime checkInTime, LocalDateTime checkOutTime);
+    List<BookingEntity> findAllByCheckInTimeAfterAndCheckOutTimeBeforeAndDeletedFalse(LocalDateTime checkInTime, LocalDateTime checkOutTime);
 }

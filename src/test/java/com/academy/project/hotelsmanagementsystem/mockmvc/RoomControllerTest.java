@@ -1,4 +1,4 @@
-package com.academy.project.hotelsmanagementsystem.room.mockmvc;
+package com.academy.project.hotelsmanagementsystem.mockmvc;
 
 import com.academy.project.hotelsmanagementsystem.dto.HotelDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoomDTO;

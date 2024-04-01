@@ -1,7 +1,6 @@
 package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
-import com.academy.project.hotelsmanagementsystem.dto.RoomBookedDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoomDTO;
 import com.academy.project.hotelsmanagementsystem.entity.*;
 import com.academy.project.hotelsmanagementsystem.exceptions.GeneralException;
@@ -9,7 +8,7 @@ import com.academy.project.hotelsmanagementsystem.repository.*;
 import com.academy.project.hotelsmanagementsystem.service.RoomService;
 import com.academy.project.hotelsmanagementsystem.utils.PageUtils;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -23,19 +22,16 @@ import static com.academy.project.hotelsmanagementsystem.mapper.RoomMapper.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.RoomTypeMapper.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.HotelMapper.*;
 
-@Validated
 @Service
+@Validated
+@RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
-    @Autowired
-    private RoomRepository roomRepository;
-    @Autowired
-    private BookingRepository bookingRepository;
-    @Autowired
-    private RoomBookedRepository roomBookedRepository;
-    @Autowired
-    private HotelRepository hotelRepository;
-    @Autowired
-    private RoomTypeRepository roomTypeRepository;
+
+    private final RoomRepository roomRepository;
+    private final BookingRepository bookingRepository;
+    private final RoomBookedRepository roomBookedRepository;
+    private final HotelRepository hotelRepository;
+    private final RoomTypeRepository roomTypeRepository;
 
     @Override
     public PageDTO<RoomDTO> findAll(Pageable pageable) {
@@ -45,24 +41,17 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDTO addRoom(@Valid RoomDTO roomDTO) {
 
-        HotelEntity hotelEntity = hotelRepository.findById(roomDTO.getHotel().getId()).orElseThrow(() -> new GeneralException("This hotel does not exist on the system"));
+        HotelEntity hotelEntity = hotelRepository.findByIdAndDeletedFalse(roomDTO.getHotel().getId()).orElseThrow(() -> new GeneralException("This hotel does not exist on the system"));
 
-        if(hotelEntity.getDeleted()){
-            throw new GeneralException("This hotel does not exist on the system");
-        }
-
-        if (roomRepository.getRoomEntitiesByHotel_Id(hotelEntity.getId()).size() >= hotelEntity.getRoomsNr()) {
+        if (roomRepository.getRoomEntitiesByHotel_IdAndDeletedFalse(hotelEntity.getId()).size() >= hotelEntity.getRoomsNr()) {
             throw new GeneralException("You cannot add a new room for this hotel. Its capacity is: " + hotelEntity.getRoomsNr() + " rooms");
         }
 
-        RoomTypeEntity roomTypeEntity = roomTypeRepository.findById(roomDTO.getRoomType().getId())
+        RoomTypeEntity roomTypeEntity = roomTypeRepository.findByIdAndDeletedFalse(roomDTO.getRoomType().getId())
                 .orElseThrow(() -> new GeneralException("This room type does not exist on the system"));
 
-        if(roomTypeEntity.getDeleted()){
-            throw new GeneralException("This room type does not exist on the system");
-        }
 
-        List<Integer> usedRoomNumbers = roomRepository.findRoomNumbersByHotelId(hotelEntity.getId());
+        List<Integer> usedRoomNumbers = roomRepository.findRoomNumbersByHotelIdAndDeletedFalse(hotelEntity.getId());
         if (usedRoomNumbers.contains(roomDTO.getRoomNr())) {
             throw new GeneralException("Room " + roomDTO.getRoomNr() + " is already on the system");
         }
@@ -86,36 +75,26 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomDTO findRoomById(Long id) {
-        RoomEntity roomEntity = roomRepository.findById(id).orElseThrow(() -> new GeneralException("Room with id: " + id + " was not found"));
+        RoomEntity roomEntity = roomRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("Room with id: " + id + " was not found"));
         return ROOM_MAPPER.toDto(roomEntity);
     }
 
     @Override
     public RoomDTO updateRoom(Long id, @Valid RoomDTO updatedRoom) {
 
-        RoomEntity roomToBeUpdated = roomRepository.findById(id).orElseThrow(() -> new GeneralException("No room with id: " + id + " was found"));
+        RoomEntity roomToBeUpdated = roomRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("No room with id: " + id + " was found"));
 
-        if (roomToBeUpdated.getDeleted()) {
-            throw new GeneralException("No room with id: " + id + " was found on the db");
-        }
+        HotelEntity hotelEntity = hotelRepository.findByIdAndDeletedFalse(updatedRoom.getHotel().getId()).orElseThrow(() -> new GeneralException("This hotel does not exist in the system"));
 
-        HotelEntity hotelEntity = hotelRepository.findById(updatedRoom.getHotel().getId()).orElseThrow(() -> new GeneralException("This hotel does not exist in the system"));
-
-        if(hotelEntity.getDeleted()){
-            throw new GeneralException("This hotel does not exist in the system");
-        }
-        if (roomRepository.getRoomEntitiesByHotel_Id(hotelEntity.getId()).size() >= hotelEntity.getRoomsNr()) {
+        if (roomRepository.getRoomEntitiesByHotel_IdAndDeletedFalse(hotelEntity.getId()).size() >= hotelEntity.getRoomsNr()) {
             throw new GeneralException("You cannot add a new room for this hotel. Its capacity is: " + hotelEntity.getRoomsNr() + " rooms");
         }
 
-        RoomTypeEntity roomTypeEntity = roomTypeRepository.findById(updatedRoom.getRoomType().getId())
+        RoomTypeEntity roomTypeEntity = roomTypeRepository.findByIdAndDeletedFalse(updatedRoom.getRoomType().getId())
                 .orElseThrow(() -> new GeneralException("This room type does not exist on the system"));
 
-        if(roomTypeEntity.getDeleted()){
-            throw new GeneralException("This hotel does not exist in the system");
-        }
 
-        List<Integer> usedRoomNumbers = roomRepository.findRoomNumbersByHotelId(hotelEntity.getId());
+        List<Integer> usedRoomNumbers = roomRepository.findRoomNumbersByHotelIdAndDeletedFalse(hotelEntity.getId());
         if (usedRoomNumbers.contains(updatedRoom.getRoomNr())) {
             throw new GeneralException("Room " + updatedRoom.getRoomNr() + " is already on the system");
         }
@@ -126,21 +105,21 @@ public class RoomServiceImpl implements RoomService {
         if (updatedRoom.getRoomNr() < roomNumberStart || updatedRoom.getRoomNr() > roomNumberEnd) {
             throw new GeneralException("Room number must be between " + roomNumberStart + " and " + roomNumberEnd + " for this hotel");
         }
+        RoomDTO roomDTO = ROOM_MAPPER.toDto(roomToBeUpdated);
+        roomDTO.setHotel(HOTEL_MAPPER.toDto(hotelEntity));
+        roomDTO.setRoomType(ROOM_TYPE_MAPPER.toDto(roomTypeEntity));
+        roomDTO.setRoomNr(updatedRoom.getRoomNr());
 
-        roomToBeUpdated.setHotel(hotelEntity);
-        roomToBeUpdated.setRoomType(roomTypeEntity);
-        roomToBeUpdated.setRoomNr(updatedRoom.getRoomNr());
-
-        return ROOM_MAPPER.toDto(roomRepository.save(roomToBeUpdated));
+        return ROOM_MAPPER.toDto(roomRepository.save(ROOM_MAPPER.toEntity(roomDTO)));
     }
 
     @Override
     public List<RoomDTO> getAvailableRooms(LocalDateTime checkIn, LocalDateTime checkOut) {
         List<RoomEntity> roomsBooked = new ArrayList<>();
-        List<BookingEntity> bookings = bookingRepository.findAllByCheckInTimeAfterAndCheckOutTimeBefore(checkIn, checkOut);
+        List<BookingEntity> bookings = bookingRepository.findAllByCheckInTimeAfterAndCheckOutTimeBeforeAndDeletedFalse(checkIn, checkOut);
 
         bookings.forEach(booking -> {
-            List<RoomBookedEntity> roomBookedEntities = roomBookedRepository.findRoomBookedByBookingId(booking.getId());
+            List<RoomBookedEntity> roomBookedEntities = roomBookedRepository.findRoomBookedByBookingIdAndDeletedFalse(booking.getId());
             roomBookedEntities.forEach(roomBookedEntity -> {
                 roomsBooked.add(roomBookedEntity.getRoom());
             });
@@ -159,10 +138,10 @@ public class RoomServiceImpl implements RoomService {
 
         RoomEntity roomToBeDeleted = roomRepository.findById(id).orElseThrow(() -> new GeneralException("No room with id: " + id + " was found"));
 
-        if (roomToBeDeleted.getDeleted()){
+        if (roomToBeDeleted.getDeleted()) {
             throw new GeneralException("No room with id: " + id + " was found on the db");
         }
-            List<RoomBookedEntity> roomsBooked = roomBookedRepository.findAll();
+        List<RoomBookedEntity> roomsBooked = roomBookedRepository.findAllNonDeleted();
         List<RoomBookedEntity> activeBookings = roomsBooked.stream().filter(roomBooked -> roomBooked.getBooking().getCheckInTime().isAfter(LocalDateTime.now()) ||
                 roomBooked.getBooking().getCheckInTime().isBefore(LocalDateTime.now())).toList();
 
@@ -176,7 +155,9 @@ public class RoomServiceImpl implements RoomService {
         if (!flag) {
             throw new GeneralException("You can not delete a room with active bookings");
         }
-        roomToBeDeleted.setDeleted(true);
-        roomRepository.save(roomToBeDeleted);
+        RoomDTO roomDTO = ROOM_MAPPER.toDto(roomToBeDeleted);
+        roomDTO.setDeleted(true);
+
+        roomRepository.save(ROOM_MAPPER.toEntity(roomDTO));
     }
 }

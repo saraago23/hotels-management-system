@@ -10,16 +10,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoomBookedRepository extends JpaRepository<RoomBookedEntity,Long> {
-    List<RoomBookedEntity> findRoomBookedByBookingId(Long bookingId);
-    List<RoomBookedEntity> findRoomBookedByRoom(RoomEntity room);
+    Optional<RoomBookedEntity> findByIdAndDeletedFalse(Long id);
+    List<RoomBookedEntity> findRoomBookedByBookingIdAndDeletedFalse(Long bookingId);
+    List<RoomBookedEntity> findRoomBookedByRoomAndDeletedFalse(RoomEntity room);
     @Query("SELECT rb FROM RoomBookedEntity rb JOIN rb.room r JOIN r.hotel h WHERE h.id = :hotelId")
-    List<RoomBookedEntity> findRoomBookedEntitiesByHotelId(Long hotelId );
+    List<RoomBookedEntity> findRoomBookedEntitiesByHotelIdAndDeletedFalse(Long hotelId );
 
     @Query("SELECT rb FROM RoomBookedEntity rb WHERE rb.deleted=false ")
     Page<RoomBookedEntity> findAllNonDeleted(Pageable pageable);
+    @Query("SELECT rb FROM RoomBookedEntity rb WHERE rb.deleted=false ")
+    List<RoomBookedEntity> findAllNonDeleted();
     @Query("SELECT rb FROM RoomBookedEntity rb WHERE rb.deleted=true ")
     Page<RoomBookedEntity> findAllDeleted(Pageable pageable);
 

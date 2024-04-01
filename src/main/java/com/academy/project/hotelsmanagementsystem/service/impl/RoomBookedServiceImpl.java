@@ -11,8 +11,8 @@ import com.academy.project.hotelsmanagementsystem.repository.RoomBookedRepositor
 import com.academy.project.hotelsmanagementsystem.service.RoomBookedService;
 import com.academy.project.hotelsmanagementsystem.utils.UserUtils;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -26,11 +26,12 @@ import static com.academy.project.hotelsmanagementsystem.mapper.RoomBookedMapper
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class RoomBookedServiceImpl implements RoomBookedService {
-    @Autowired
-    private RoomBookedRepository roomBookedRepository;
-    @Autowired
-    private BookingRepository bookingRepository;
+
+    private final RoomBookedRepository roomBookedRepository;
+
+    private final BookingRepository bookingRepository;
 
     //admin
     @Override
@@ -50,14 +51,10 @@ public class RoomBookedServiceImpl implements RoomBookedService {
 
     @Override
     public RoomBookedDTO findRoomBookedById(Long id) {
-        RoomBookedEntity roomBookedEntity = roomBookedRepository.findById(id).orElseThrow(() -> new GeneralException("Room Booked with id: " + id + " was not found"));
+        RoomBookedEntity roomBookedEntity = roomBookedRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("Room Booked with id: " + id + " was not found"));
 
         if (!(UserUtils.getLoggedUserRole().contains("ADMIN") || UserUtils.getLoggedUser().equals(roomBookedEntity.getBooking().getUser().getUsername()))) {
             throw new GeneralException("You have no access over this booked room");
-        }
-
-        if (roomBookedEntity.getDeleted()) {
-            throw new GeneralException("No Booked Room with id: " + id + " was found");
         }
 
         return ROOM_BOOKED_MAPPER.toDto(roomBookedEntity);
@@ -65,22 +62,18 @@ public class RoomBookedServiceImpl implements RoomBookedService {
 
     @Override
     public RoomBookedDTO updateRoomBooked(Long id, @Valid RoomBookedDTO updatedRoomBooked) {
-        RoomBookedEntity roomBookedToBeUpdated = roomBookedRepository.findById(id).orElseThrow(() -> new GeneralException("No booked room with id: " + id + " was found"));
-
-        if (roomBookedToBeUpdated.getDeleted()) {
-            throw new GeneralException("No booked room with id: " + id + " was found on the db");
-        }
+        RoomBookedEntity roomBookedToBeUpdated = roomBookedRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("No booked room with id: " + id + " was found"));
 
         if (!(UserUtils.getLoggedUserRole().contains("ADMIN") || UserUtils.getLoggedUser().equals(roomBookedToBeUpdated.getBooking().getUser().getUsername()))) {
             throw new GeneralException("You have no access to delete this booked room");
         }
 
-        List<BookingEntity> existingBookings = bookingRepository.findAllByCheckInTimeAfterAndCheckOutTimeBefore(roomBookedToBeUpdated.getBooking().getCheckInTime(), roomBookedToBeUpdated.getBooking().getCheckOutTime());
+        List<BookingEntity> existingBookings = bookingRepository.findAllByCheckInTimeAfterAndCheckOutTimeBeforeAndDeletedFalse(roomBookedToBeUpdated.getBooking().getCheckInTime(), roomBookedToBeUpdated.getBooking().getCheckOutTime());
 
         List<RoomEntity> availableRooms = new ArrayList<>();
 
         existingBookings.forEach(booking -> {
-            List<RoomBookedEntity> roomBookedEntities = roomBookedRepository.findRoomBookedByBookingId(booking.getId());
+            List<RoomBookedEntity> roomBookedEntities = roomBookedRepository.findRoomBookedByBookingIdAndDeletedFalse(booking.getId());
             roomBookedEntities.forEach(roomBookedEntity -> {
                 availableRooms.add(roomBookedEntity.getRoom());
             });
@@ -91,15 +84,16 @@ public class RoomBookedServiceImpl implements RoomBookedService {
 
     @Override
     public void deleteRoomBooked(Long id) {
-        RoomBookedEntity roomBookedToBeDeleted = roomBookedRepository.findById(id).orElseThrow(() -> new GeneralException("No Room Booked with id: " + id + " was found to be deleted"));
+        RoomBookedEntity roomBookedToBeDeleted = roomBookedRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("No Room Booked with id: " + id + " was found to be deleted"));
 
         if (!(UserUtils.getLoggedUserRole().contains("ADMIN") || UserUtils.getLoggedUser().equals(roomBookedToBeDeleted.getBooking().getUser().getUsername()))) {
             throw new GeneralException("You have no access to delete this booked room");
         }
-        roomBookedToBeDeleted.setDeleted(true);
+        RoomBookedDTO roomBookedDTO = ROOM_BOOKED_MAPPER.toDto(roomBookedToBeDeleted);
+        roomBookedDTO.setDeleted(true);
+        roomBookedDTO.getBooking().setTotalPrice(roomBookedToBeDeleted.getBooking().getTotalPrice().subtract(roomBookedToBeDeleted.getPrice()));
+        roomBookedDTO.getBooking().setTotalNumGuests(roomBookedToBeDeleted.getBooking().getTotalNumGuests() - roomBookedToBeDeleted.getRoom().getRoomType().getNumGuest());
 
-        roomBookedToBeDeleted.getBooking().setTotalPrice(roomBookedToBeDeleted.getBooking().getTotalPrice().subtract(roomBookedToBeDeleted.getPrice()));
-        roomBookedToBeDeleted.getBooking().setTotalNumGuests(roomBookedToBeDeleted.getBooking().getTotalNumGuests() - roomBookedToBeDeleted.getRoom().getRoomType().getNumGuest());
-        roomBookedRepository.save(roomBookedToBeDeleted);
+        roomBookedRepository.save(ROOM_BOOKED_MAPPER.toEntity(roomBookedDTO));
     }
 }

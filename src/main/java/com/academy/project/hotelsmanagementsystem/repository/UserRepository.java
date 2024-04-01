@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity,Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+    Optional<UserEntity> findByIdAndDeletedFalse(Long id);
 
     @Query("SELECT u FROM UserEntity u WHERE u.deleted=false ")
     Page<UserEntity> findAllNonDeleted(Pageable pageable);
+
     @Query("SELECT u FROM UserEntity u WHERE u.deleted=true ")
+    Page<UserEntity> findAllDeleted(Pageable pageable);
 
-    Page<UserEntity>findAllDeleted(Pageable pageable);
-    Optional<UserEntity> findByUsername(String username);
+    Optional<UserEntity> findByUsernameAndDeletedFalse(String username);
 
-    List<UserEntity> findByRoleId(Long id);
+    List<UserEntity> findByRoleIdAndDeletedFalse(Long id);
 }

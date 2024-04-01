@@ -1,6 +1,7 @@
 package com.academy.project.hotelsmanagementsystem.dto;
 
 import com.academy.project.hotelsmanagementsystem.annotations.AdultAge;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
@@ -33,5 +34,11 @@ public class UserDTO {
     private String username;
     @NotNull(message = "{user.validation.password}")
     private String password;
+    @JsonIgnore
+    private Boolean deleted;
 
+    public UserDTO(String email, String password) {
+        this.email=email;
+        this.password=password;
+    }
 }

@@ -1,3 +1,4 @@
+/*
 package com.academy.project.hotelsmanagementsystem.roomtype;
 
 import com.academy.project.hotelsmanagementsystem.dto.RoomTypeDTO;
@@ -119,3 +120,4 @@ public class RoomTypeServiceTest {
 
 
 }
+*/

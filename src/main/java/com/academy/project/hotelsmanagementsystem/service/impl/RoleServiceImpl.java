@@ -8,8 +8,7 @@ import com.academy.project.hotelsmanagementsystem.repository.RoleRepository;
 import com.academy.project.hotelsmanagementsystem.repository.UserRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoleService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -19,11 +18,13 @@ import static com.academy.project.hotelsmanagementsystem.mapper.RoleMapper.*;
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final UserRepository userRepository;
+
 
     //admin
     @Override
@@ -52,42 +53,36 @@ public class RoleServiceImpl implements RoleService {
     //admin
     @Override
     public RoleDTO findRoleById(Long id) {
-        RoleEntity roleEntity = roleRepository.findById(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
-        if (roleEntity.getDeleted()) {
-            throw new GeneralException("No role with id: " + id + " was found");
-        }
+        RoleEntity roleEntity = roleRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
+
         return ROLE_MAPPER.toDto(roleEntity);
     }
 
     //admin
     @Override
     public RoleDTO updateRole(Long id, @Valid RoleDTO updatedRole) {
-        RoleEntity roleToBeUpdated = roleRepository.findById(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
+        RoleEntity roleToBeUpdated = roleRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
 
-        if (roleToBeUpdated.getDeleted()) {
-            throw new GeneralException("No role with id: " + id + " was found on the db");
-        }
+        RoleDTO roleDTO=ROLE_MAPPER.toDto(roleToBeUpdated);
+        roleDTO.setDescription(updatedRole.getDescription());
 
-        roleToBeUpdated.setDescription(updatedRole.getDescription());
-
-        return ROLE_MAPPER.toDto(roleRepository.save(roleToBeUpdated));
+        return ROLE_MAPPER.toDto(roleRepository.save(ROLE_MAPPER.toEntity(roleDTO)));
 
     }
 
     //admin
     @Override
     public void deleteRole(Long id) {
-        RoleEntity roleToBeDeleted = roleRepository.findById(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
+        RoleEntity roleToBeDeleted = roleRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
 
-        if (roleToBeDeleted.getDeleted()) {
-            throw new GeneralException("No role with id: " + id + " was found on the db");
-        }
-
-        if (!userRepository.findByRoleId(id).isEmpty()) {
+        if (!userRepository.findByRoleIdAndDeletedFalse(id).isEmpty()) {
             throw new GeneralException("You can not delete a role with existing users");
         }
-        roleToBeDeleted.setDeleted(true);
-        roleRepository.save(roleToBeDeleted);
+
+        RoleDTO roleDTO=ROLE_MAPPER.toDto(roleToBeDeleted);
+
+        roleDTO.setDeleted(true);
+        roleRepository.save(ROLE_MAPPER.toEntity(roleDTO));
 
     }
 }

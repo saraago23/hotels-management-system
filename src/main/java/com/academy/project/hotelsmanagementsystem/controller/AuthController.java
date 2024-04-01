@@ -4,20 +4,19 @@ import com.academy.project.hotelsmanagementsystem.dto.UserDTO;
 import com.academy.project.hotelsmanagementsystem.service.UserService;
 import com.academy.project.hotelsmanagementsystem.service.impl.TokenService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    TokenService tokenService;
+    private final TokenService tokenService;
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
     @PostMapping("/token")
     public String generateToken(Authentication auth){
