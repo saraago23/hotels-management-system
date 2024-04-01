@@ -1,7 +1,6 @@
 package com.academy.project.hotelsmanagementsystem.mapper;
 
 import com.academy.project.hotelsmanagementsystem.dto.BookingDTO;
-import com.academy.project.hotelsmanagementsystem.dto.CreateBookingDTO;
 import com.academy.project.hotelsmanagementsystem.dto.DisplayBookingDTO;
 import com.academy.project.hotelsmanagementsystem.dto.UpdateBookingDTO;
 import com.academy.project.hotelsmanagementsystem.entity.BookingEntity;

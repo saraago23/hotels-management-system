@@ -1,8 +1,8 @@
 package com.academy.project.hotelsmanagementsystem.controller;
 
 import com.academy.project.hotelsmanagementsystem.dto.BookingDTO;
-import com.academy.project.hotelsmanagementsystem.dto.CreateBookingDTO;
-import com.academy.project.hotelsmanagementsystem.dto.UpdateBookingDTO;
+import com.academy.project.hotelsmanagementsystem.dto.CreateUpdateBookingDTO;
+import com.academy.project.hotelsmanagementsystem.dto.DisplayBookingDTO;
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.service.BookingService;
 import org.springframework.data.domain.PageRequest;
@@ -48,12 +48,12 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.findMyBookings());
     }
     @PostMapping
-    public ResponseEntity<BookingDTO> addBooking(@RequestBody CreateBookingDTO booking){
+    public ResponseEntity<BookingDTO> addBooking(@RequestBody CreateUpdateBookingDTO booking){
        return ResponseEntity.ok(bookingService.addBooking(booking));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookingDTO> updateBooking(@PathVariable Long id, @RequestBody CreateBookingDTO updateBookingDTO){
+    public ResponseEntity<DisplayBookingDTO> updateBooking(@PathVariable Long id, @RequestBody CreateUpdateBookingDTO updateBookingDTO){
         return ResponseEntity.ok(bookingService.updateBooking(id, updateBookingDTO));
     }
 

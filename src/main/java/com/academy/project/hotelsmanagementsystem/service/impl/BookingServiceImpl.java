@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static com.academy.project.hotelsmanagementsystem.utils.PageUtils.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.BookingMapper.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.UserMapper.*;
+import static com.academy.project.hotelsmanagementsystem.mapper.RoomMapper.*;
 
 @Service
 @Validated
@@ -160,7 +161,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
 
-    public BookingDTO updateBooking(Long id, @Valid CreateUpdateBookingDTO updateBookingDTO) {
+    public DisplayBookingDTO updateBooking(Long id, @Valid CreateUpdateBookingDTO updateBookingDTO) {
         BookingEntity bookingToBeUpdated = bookingRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("Booking with id: " + id + " does not exist"));
 
         if (isUserAllowed(bookingToBeUpdated.getUser())) {
@@ -181,11 +182,11 @@ public class BookingServiceImpl implements BookingService {
             throw new GeneralException("Rooms are not available for requested dates");
         }
 
-        oldBookedRooms.forEach(oldBookedRoom->oldBookedRoom.setDeleted(true));
+        oldBookedRooms.forEach(oldBookedRoom -> oldBookedRoom.setDeleted(true));
 
         BigDecimal totalPrice = BigDecimal.ZERO;
 
-        for (int i = 0; i < newRooms.size() ; i++) {
+        for (int i = 0; i < newRooms.size(); i++) {
 
             RoomEntity newRoom = newRooms.get(i);
 
@@ -217,7 +218,18 @@ public class BookingServiceImpl implements BookingService {
         updatedDto.setDeleted(false);
         updatedDto.setSpecialReq(updateBookingDTO.getSpecialReq());
 
-        return BOOKING_MAPPER.toDto(bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto)));
+        BOOKING_MAPPER.toDto(bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto)));
+
+        return DisplayBookingDTO.builder()
+                .firstName(bookingToBeUpdated.getUser().getFirstName())
+                .lastName(bookingToBeUpdated.getUser().getLastName())
+                .totalPrice(updatedDto.getTotalPrice())
+                .specialReq(updateBookingDTO.getSpecialReq())
+                .checkInTime(updateBookingDTO.getCheckInTime())
+                .checkOutTime(updateBookingDTO.getCheckOutTime())
+                .totalNumGuests(updateBookingDTO.getTotalNumGuests())
+                .rooms(newRooms.stream().map(ROOM_MAPPER::toDto).toList())
+                .build();
     }
 
     @Override

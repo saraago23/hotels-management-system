@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateBookingDTO {
+public class CreateUpdateBookingDTO {
     //@NotNull
     private Long id;
     @NotNull
