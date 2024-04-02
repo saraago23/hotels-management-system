@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -174,41 +175,40 @@ public class BookingServiceImpl implements BookingService {
 
         List<RoomBookedEntity> oldBookedRooms = roomBookedRepository.findRoomBookedByBookingIdAndDeletedFalse(bookingToBeUpdated.getId());
 
-        List<Long> newRoomIds = updateBookingDTO.getRoomDTOList().stream().map(RoomDTO::getId).toList();
+        List<RoomEntity> newRooms = new ArrayList<>(updateBookingDTO.getRoomDTOList().stream().map(room -> roomRepository.findByIdAndDeletedFalse(room.getId()).orElseThrow(() -> new GeneralException("No room with id: " + room.getId() + " was found on the db"))).toList());
 
-        List<RoomEntity> newRooms = newRoomIds.stream().map(roomId -> roomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(() -> new GeneralException("No room with id: " + roomId + " was found on the db"))).toList();
+        for (RoomBookedEntity roomBooked : oldBookedRooms) {
+            if (!newRooms.contains(roomBooked.getRoom())) {
+                roomBooked.setDeleted(true);
+                roomBookedRepository.save(roomBooked);
+            }
+            newRooms.remove(roomBooked.getRoom());
+        }
 
         if (!areRoomsAvailable(bookingToBeUpdated, newRooms, updateBookingDTO.getCheckInTime(), updateBookingDTO.getCheckOutTime())) {
             throw new GeneralException("Rooms are not available for requested dates");
         }
 
-        oldBookedRooms.forEach(oldBookedRoom -> oldBookedRoom.setDeleted(true));
-
-        BigDecimal totalPrice = BigDecimal.ZERO;
-
-        for (int i = 0; i < newRooms.size(); i++) {
-
-            RoomEntity newRoom = newRooms.get(i);
-
-            RoomBookedEntity newBookedRoom = RoomBookedEntity.builder()
-                    .room(newRoom)
+        for (RoomEntity room : newRooms) {
+            RoomBookedEntity roomBooked = RoomBookedEntity.builder()
+                    .room(room)
                     .booking(bookingToBeUpdated)
-                    .price(newRoom.getRoomType().getPrice())
+                    .price(room.getRoomType().getPrice())
                     .deleted(false)
                     .build();
-
-            totalPrice = totalPrice.add(newRoom.getRoomType().getPrice());
-            roomBookedRepository.save(newBookedRoom);
-
+            roomBookedRepository.save(roomBooked);
         }
 
-        Integer maxAllowedGuests = newRooms.stream()
-                .mapToInt(room -> room.getRoomType().getNumGuest())
+        List<RoomBookedEntity> updatedRoomsBooked = roomBookedRepository.findRoomBookedByBookingIdAndDeletedFalse(bookingToBeUpdated.getId());
+
+        Integer maxAllowedGuests = updatedRoomsBooked.stream()
+                .mapToInt(roomBooked -> roomBooked.getRoom().getRoomType().getNumGuest())
                 .sum();
 
         if (updateBookingDTO.getTotalNumGuests() > maxAllowedGuests) {
             throw new GeneralException("You have exceeded the number of guests!");
         }
+        BigDecimal totalPrice = BigDecimal.valueOf(updatedRoomsBooked.stream().mapToDouble(roomBooked-> roomBooked.getRoom().getRoomType().getPrice().doubleValue()).sum());
 
         BookingDTO updatedDto = BOOKING_MAPPER.toDto(bookingToBeUpdated);
         updatedDto.setCheckOutTime(updateBookingDTO.getCheckOutTime());
@@ -218,17 +218,17 @@ public class BookingServiceImpl implements BookingService {
         updatedDto.setDeleted(false);
         updatedDto.setSpecialReq(updateBookingDTO.getSpecialReq());
 
-        BOOKING_MAPPER.toDto(bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto)));
+       BookingEntity updatedBooking= bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto));
 
         return DisplayBookingDTO.builder()
-                .firstName(bookingToBeUpdated.getUser().getFirstName())
-                .lastName(bookingToBeUpdated.getUser().getLastName())
-                .totalPrice(updatedDto.getTotalPrice())
-                .specialReq(updateBookingDTO.getSpecialReq())
-                .checkInTime(updateBookingDTO.getCheckInTime())
-                .checkOutTime(updateBookingDTO.getCheckOutTime())
-                .totalNumGuests(updateBookingDTO.getTotalNumGuests())
-                .rooms(newRooms.stream().map(ROOM_MAPPER::toDto).toList())
+                .firstName(updatedBooking.getUser().getFirstName())
+                .lastName(updatedBooking.getUser().getLastName())
+                .totalPrice(updatedBooking.getTotalPrice())
+                .specialReq(updatedBooking.getSpecialReq())
+                .checkInTime(updatedBooking.getCheckInTime())
+                .checkOutTime(updatedBooking.getCheckOutTime())
+                .totalNumGuests(updatedBooking.getTotalNumGuests())
+                .rooms(updatedRoomsBooked.stream().map(roomBooked-> ROOM_MAPPER.toDto(roomBooked.getRoom())).toList())
                 .build();
     }
 

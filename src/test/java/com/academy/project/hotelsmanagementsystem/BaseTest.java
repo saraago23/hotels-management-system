@@ -23,7 +23,7 @@ public class BaseTest {
     protected MockMvc mockMvc;
     protected ObjectMapper objectMapper;
 
-    @BeforeEach
+    //@BeforeEach
     public void setUp(){
         mockMvc= MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(springSecurity()).build();

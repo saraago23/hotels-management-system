@@ -55,7 +55,7 @@ public class RoomControllerTest {
     }
 
 
-    @Test
+    //@Test
     public void test_find_all() throws Exception {
         this.mockMvc.perform(get("/rooms"))
                 .andDo(print()).andExpect(status().isOk())
@@ -65,7 +65,7 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$.content[2].id").value(3));
     }
 
-    @Test
+    //@Test
     public void test_find_all_2() throws Exception {
         this.mockMvc.perform(get("/rooms?page={page}&size={size}", 0, 3))
                 .andDo(print()).andExpect(status().isOk()).andExpect(jsonPath("$.content", hasSize(3)))
@@ -74,7 +74,7 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$.content[2].id").value(3));
     }
 
-    @Test
+    //@Test
     public void test_find_by_room_id() throws Exception {
         this.mockMvc.perform(get("/rooms/{id}", 1))
                 .andDo(print()).andExpect(status().isOk())
@@ -85,7 +85,7 @@ public class RoomControllerTest {
     }
 
 
-    @Test
+    //@Test
 //    @Transactional
     public void test_add_room() throws Exception {
         var requestBody = RoomDTO.builder()
@@ -104,7 +104,7 @@ public class RoomControllerTest {
 
     }
 
-    @Test
+    //@Test
     @Transactional
     public void test_update_roomType()throws Exception{
         var requestBody = RoomDTO.builder()

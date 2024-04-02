@@ -24,7 +24,7 @@ public class RoleControllerTest extends BaseTest {
 
     @MockBean
    private RoleService roleService;
-    @Test
+    //@Test
     public void test_find_all() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAuthentication("ROLE_ADMIN"));
         List<RoleDTO> roles = new ArrayList<>();

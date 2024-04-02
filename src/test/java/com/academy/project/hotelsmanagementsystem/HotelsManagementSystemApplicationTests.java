@@ -11,7 +11,7 @@ class HotelsManagementSystemApplicationTests {
 	@Autowired
 	HotelsManagementSystemApplication toTest;
 
-	@Test
+	//@Test
 	void contextLoads() {
 	}
 

@@ -31,8 +31,6 @@ public class RoomBookedServiceImpl implements RoomBookedService {
 
     private final RoomBookedRepository roomBookedRepository;
 
-    private final BookingRepository bookingRepository;
-
     //admin
     @Override
     public PageDTO<RoomBookedDTO> findAll(Pageable pageable) {
@@ -62,23 +60,6 @@ public class RoomBookedServiceImpl implements RoomBookedService {
 
     @Override
     public RoomBookedDTO updateRoomBooked(Long id, @Valid RoomBookedDTO updatedRoomBooked) {
-        RoomBookedEntity roomBookedToBeUpdated = roomBookedRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("No booked room with id: " + id + " was found"));
-
-        if (!(UserUtils.getLoggedUserRole().contains("ADMIN") || UserUtils.getLoggedUser().equals(roomBookedToBeUpdated.getBooking().getUser().getUsername()))) {
-            throw new GeneralException("You have no access to delete this booked room");
-        }
-
-        List<BookingEntity> existingBookings = bookingRepository.findAllByCheckInTimeAfterAndCheckOutTimeBeforeAndDeletedFalse(roomBookedToBeUpdated.getBooking().getCheckInTime(), roomBookedToBeUpdated.getBooking().getCheckOutTime());
-
-        List<RoomEntity> availableRooms = new ArrayList<>();
-
-        existingBookings.forEach(booking -> {
-            List<RoomBookedEntity> roomBookedEntities = roomBookedRepository.findRoomBookedByBookingIdAndDeletedFalse(booking.getId());
-            roomBookedEntities.forEach(roomBookedEntity -> {
-                availableRooms.add(roomBookedEntity.getRoom());
-            });
-        });
-
         throw new NotImplementedException("This service is not implemented. Please create a new booking if you need more rooms");
     }
 

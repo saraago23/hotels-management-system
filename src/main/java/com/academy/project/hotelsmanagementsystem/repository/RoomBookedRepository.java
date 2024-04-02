@@ -1,6 +1,5 @@
 package com.academy.project.hotelsmanagementsystem.repository;
 
-import com.academy.project.hotelsmanagementsystem.dto.RoomDTO;
 import com.academy.project.hotelsmanagementsystem.entity.RoomBookedEntity;
 import com.academy.project.hotelsmanagementsystem.entity.RoomEntity;
 import org.springframework.data.domain.Page;
@@ -26,7 +25,5 @@ public interface RoomBookedRepository extends JpaRepository<RoomBookedEntity,Lon
     List<RoomBookedEntity> findAllNonDeleted();
     @Query("SELECT rb FROM RoomBookedEntity rb WHERE rb.deleted=true ")
     Page<RoomBookedEntity> findAllDeleted(Pageable pageable);
-
-    @Query("SELECT r.roomNr FROM RoomEntity r WHERE r.hotel.id = :hotelId")
-    List<Integer> findRoomNumbersByHotelId(Long hotelId);
+    RoomBookedEntity findRoomBookedEntityByBooking_IdAndRoomIdAndDeletedFalse(Long bookingId,Long roomId);
 }
