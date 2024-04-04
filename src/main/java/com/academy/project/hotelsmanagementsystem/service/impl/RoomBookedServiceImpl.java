@@ -2,11 +2,8 @@ package com.academy.project.hotelsmanagementsystem.service.impl;
 
 import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
 import com.academy.project.hotelsmanagementsystem.dto.RoomBookedDTO;
-import com.academy.project.hotelsmanagementsystem.entity.BookingEntity;
 import com.academy.project.hotelsmanagementsystem.entity.RoomBookedEntity;
-import com.academy.project.hotelsmanagementsystem.entity.RoomEntity;
 import com.academy.project.hotelsmanagementsystem.exceptions.GeneralException;
-import com.academy.project.hotelsmanagementsystem.repository.BookingRepository;
 import com.academy.project.hotelsmanagementsystem.repository.RoomBookedRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoomBookedService;
 import com.academy.project.hotelsmanagementsystem.utils.UserUtils;
@@ -17,9 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.academy.project.hotelsmanagementsystem.utils.PageUtils.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.RoomBookedMapper.*;

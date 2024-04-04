@@ -13,7 +13,6 @@ import com.academy.project.hotelsmanagementsystem.service.UserService;
 import com.academy.project.hotelsmanagementsystem.utils.UserUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

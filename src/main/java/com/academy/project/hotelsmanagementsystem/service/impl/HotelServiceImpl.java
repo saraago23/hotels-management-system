@@ -10,7 +10,6 @@ import com.academy.project.hotelsmanagementsystem.repository.RoomBookedRepositor
 import com.academy.project.hotelsmanagementsystem.service.HotelService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,9 +17,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static com.academy.project.hotelsmanagementsystem.mapper.RoomMapper.ROOM_MAPPER;
 import static com.academy.project.hotelsmanagementsystem.utils.PageUtils.*;
 import static com.academy.project.hotelsmanagementsystem.mapper.HotelMapper.*;
 

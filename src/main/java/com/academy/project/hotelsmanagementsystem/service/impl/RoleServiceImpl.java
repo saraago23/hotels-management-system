@@ -8,7 +8,6 @@ import com.academy.project.hotelsmanagementsystem.repository.RoleRepository;
 import com.academy.project.hotelsmanagementsystem.repository.UserRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoleService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

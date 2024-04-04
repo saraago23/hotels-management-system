@@ -1,6 +1,5 @@
 package com.academy.project.hotelsmanagementsystem.repository;
 
-import com.academy.project.hotelsmanagementsystem.entity.BookingEntity;
 import com.academy.project.hotelsmanagementsystem.entity.RoleEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

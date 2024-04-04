@@ -25,5 +25,4 @@ public interface RoomBookedRepository extends JpaRepository<RoomBookedEntity,Lon
     List<RoomBookedEntity> findAllNonDeleted();
     @Query("SELECT rb FROM RoomBookedEntity rb WHERE rb.deleted=true ")
     Page<RoomBookedEntity> findAllDeleted(Pageable pageable);
-    RoomBookedEntity findRoomBookedEntityByBooking_IdAndRoomIdAndDeletedFalse(Long bookingId,Long roomId);
 }
