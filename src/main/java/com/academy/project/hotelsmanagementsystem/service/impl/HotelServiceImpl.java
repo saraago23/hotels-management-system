@@ -11,6 +11,7 @@ import com.academy.project.hotelsmanagementsystem.service.HotelService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -26,12 +27,12 @@ import static com.academy.project.hotelsmanagementsystem.mapper.HotelMapper.*;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
 
-    private final HotelRepository hotelRepository;
-
-    private final RoomBookedRepository roomBookedRepository;
+    @Autowired
+    private HotelRepository hotelRepository;
+    @Autowired
+    private RoomBookedRepository roomBookedRepository;
 
     @Override
     public PageDTO<HotelDTO> findAll(Pageable pageable) {
@@ -77,13 +78,13 @@ public class HotelServiceImpl implements HotelService {
         List<RoomBookedEntity> roomsBooked = roomBookedRepository.findRoomBookedEntitiesByHotelIdAndDeletedFalse(id);
 
         boolean hasActiveBookings = roomsBooked.stream()
-                .anyMatch(roomBooked -> roomBooked.getBooking().getCheckInTime().isAfter(LocalDateTime.now())||
+                .anyMatch(roomBooked -> roomBooked.getBooking().getCheckInTime().isAfter(LocalDateTime.now()) ||
                         roomBooked.getBooking().getCheckInTime().isBefore(LocalDateTime.now()));
 
         if (hasActiveBookings) {
             throw new GeneralException("You can not delete hotels with active bookings");
         }
-        HotelDTO hotelDTO=HOTEL_MAPPER.toDto(hotelToBeDeleted);
+        HotelDTO hotelDTO = HOTEL_MAPPER.toDto(hotelToBeDeleted);
         hotelDTO.setDeleted(true);
 
         hotelRepository.save(HOTEL_MAPPER.toEntity(hotelDTO));

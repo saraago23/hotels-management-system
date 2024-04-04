@@ -11,7 +11,7 @@ import com.academy.project.hotelsmanagementsystem.service.BookingService;
 import com.academy.project.hotelsmanagementsystem.utils.UserUtils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -29,13 +29,16 @@ import static com.academy.project.hotelsmanagementsystem.mapper.RoomMapper.*;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
-    private final BookingRepository bookingRepository;
-    private final UserRepository userRepository;
-    private final RoomBookedRepository roomBookedRepository;
-    private final RoomRepository roomRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoomBookedRepository roomBookedRepository;
+    @Autowired
+    private RoomRepository roomRepository;
 
     @Override
     public PageDTO<BookingDTO> findAll(Pageable pageable) {
@@ -124,9 +127,6 @@ public class BookingServiceImpl implements BookingService {
             throw new GeneralException("You are not allowed to access this feature!");
         }
 
-        if (bookingEntity.getDeleted()) {
-            throw new GeneralException("This booking no longer exists");
-        }
 
         return BOOKING_MAPPER.toDto(bookingEntity);
     }
@@ -140,11 +140,8 @@ public class BookingServiceImpl implements BookingService {
         }
         List<BookingEntity> bookings = bookingRepository.findBookingsByUserAndDeletedFalse(userEntity);
 
-        List<BookingEntity> nonDeletedBookings = bookings.stream()
-                .filter(bookingEntity -> !bookingEntity.getDeleted())
-                .toList();
 
-        return nonDeletedBookings.stream().map(BOOKING_MAPPER::toDto).collect(Collectors.toList());
+        return bookings.stream().map(BOOKING_MAPPER::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -153,11 +150,7 @@ public class BookingServiceImpl implements BookingService {
         UserEntity loggedUser = userRepository.findByUsernameAndDeletedFalse(UserUtils.getLoggedUser()).orElseThrow(() -> new GeneralException("User not found on the db"));
         List<BookingEntity> bookings = bookingRepository.findBookingsByUserAndDeletedFalse(loggedUser);
 
-        List<BookingEntity> nonDeletedBookings = bookings.stream()
-                .filter(bookingEntity -> !bookingEntity.getDeleted())
-                .toList();
-
-        return nonDeletedBookings.stream().map(BOOKING_MAPPER::toDto).collect(Collectors.toList());
+        return bookings.stream().map(BOOKING_MAPPER::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -208,7 +201,7 @@ public class BookingServiceImpl implements BookingService {
         if (updateBookingDTO.getTotalNumGuests() > maxAllowedGuests) {
             throw new GeneralException("You have exceeded the number of guests!");
         }
-        BigDecimal totalPrice = BigDecimal.valueOf(updatedRoomsBooked.stream().mapToDouble(roomBooked-> roomBooked.getRoom().getRoomType().getPrice().doubleValue()).sum());
+        BigDecimal totalPrice = BigDecimal.valueOf(updatedRoomsBooked.stream().mapToDouble(roomBooked -> roomBooked.getRoom().getRoomType().getPrice().doubleValue()).sum());
 
         BookingDTO updatedDto = BOOKING_MAPPER.toDto(bookingToBeUpdated);
         updatedDto.setCheckOutTime(updateBookingDTO.getCheckOutTime());
@@ -218,7 +211,7 @@ public class BookingServiceImpl implements BookingService {
         updatedDto.setDeleted(false);
         updatedDto.setSpecialReq(updateBookingDTO.getSpecialReq());
 
-       BookingEntity updatedBooking= bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto));
+        BookingEntity updatedBooking = bookingRepository.save(BOOKING_MAPPER.toEntity(updatedDto));
 
         return DisplayBookingDTO.builder()
                 .firstName(updatedBooking.getUser().getFirstName())
@@ -228,7 +221,7 @@ public class BookingServiceImpl implements BookingService {
                 .checkInTime(updatedBooking.getCheckInTime())
                 .checkOutTime(updatedBooking.getCheckOutTime())
                 .totalNumGuests(updatedBooking.getTotalNumGuests())
-                .rooms(updatedRoomsBooked.stream().map(roomBooked-> ROOM_MAPPER.toDto(roomBooked.getRoom())).toList())
+                .rooms(updatedRoomsBooked.stream().map(roomBooked -> ROOM_MAPPER.toDto(roomBooked.getRoom())).toList())
                 .build();
     }
 

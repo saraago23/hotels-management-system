@@ -1,11 +1,9 @@
 package com.academy.project.hotelsmanagementsystem.controller;
 
 import com.academy.project.hotelsmanagementsystem.BaseTest;
-import com.academy.project.hotelsmanagementsystem.dto.PageDTO;
-import com.academy.project.hotelsmanagementsystem.dto.RoleDTO;
-import com.academy.project.hotelsmanagementsystem.service.RoleService;
+import com.academy.project.hotelsmanagementsystem.dto.*;
+import com.academy.project.hotelsmanagementsystem.service.RoomService;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,66 +23,68 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class RoleControllerTest extends BaseTest {
+public class RoomControllerTest extends BaseTest {
 
     @MockBean
-    private RoleService roleService;
+    private RoomService roomService;
 
     @Test
     public void test_find_all() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAuthentication("ROLE_ADMIN"));
-        List<RoleDTO> roleDTOList = new ArrayList<>();
-        PageDTO<RoleDTO> roles = new PageDTO<>(roleDTOList, 0L, 0, 0, true, false);
-        doReturn(roles).when(roleService).findAllNonDeleted(Pageable.unpaged());
-        mockMvc.perform(MockMvcRequestBuilders.get("/roles"))
+        List<RoomDTO> roomDTOList = new ArrayList<>();
+        PageDTO<RoomDTO> rooms = new PageDTO<>(roomDTOList, 0L, 0, 0, true, false);
+        doReturn(rooms).when(roomService).findAll(Pageable.unpaged());
+        mockMvc.perform(MockMvcRequestBuilders.get("/rooms"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void test_find_role_by_id() throws Exception {
+    public void test_find_room_by_id() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(getAuthentication("ROLE_ADMIN"));
-        RoleDTO roleDTO = new RoleDTO();
-        doReturn(roleDTO).when(roleService).findRoleById(any());
-        mockMvc.perform(MockMvcRequestBuilders.get("/roles/1"))
+        RoomDTO roomDTO = new RoomDTO();
+        doReturn(roomDTO).when(roomService).findRoomById(any());
+        mockMvc.perform(MockMvcRequestBuilders.get("/rooms/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void test_addRole_ok() throws Exception{
+    public void test_addRoom_ok() throws Exception{
         SecurityContextHolder.getContext().setAuthentication(getAuthentication("ROLE_ADMIN"));
-        RoleDTO roleDTO= RoleDTO.builder()
-                .title("title")
-                .description("desc")
+        RoomDTO roomDTO= RoomDTO.builder()
+                .roomNr(3)
+                .roomType(new RoomTypeDTO())
+                .hotel(new HotelDTO())
                 .deleted(false)
                 .build();
-        doReturn(roleDTO).when(roleService).addRole(any());
-        mockMvc.perform(MockMvcRequestBuilders.post("/roles")
+        doReturn(roomDTO).when(roomService).addRoom(any());
+        mockMvc.perform(MockMvcRequestBuilders.post("/rooms")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new RoleDTO())))
+                        .content(objectMapper.writeValueAsString(new RoomDTO())))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void test_updateRole_ok() throws Exception{
+    public void test_updateRoom_ok() throws Exception{
         SecurityContextHolder.getContext().setAuthentication(getAuthentication("ROLE_ADMIN"));
 
-        RoleDTO roleDTO= RoleDTO.builder()
-                .title("title")
-                .description("desc")
+        RoomDTO roomDTO= RoomDTO.builder()
+                .roomNr(3)
+                .roomType(new RoomTypeDTO())
+                .hotel(new HotelDTO())
                 .deleted(false)
                 .build();
-        doReturn(roleDTO).when(roleService).addRole(any());
-        mockMvc.perform(MockMvcRequestBuilders.post("/roles")
+        doReturn(roomDTO).when(roomService).addRoom(any());
+        mockMvc.perform(MockMvcRequestBuilders.post("/rooms")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new RoleDTO())))
+                        .content(objectMapper.writeValueAsString(new RoomDTO())))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void test_deleteCategory_ok() throws Exception{
         SecurityContextHolder.getContext().setAuthentication(getAuthentication("ROLE_ADMIN"));
-        doNothing().when(roleService).deleteRole(anyLong());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/roles/1"))
+        doNothing().when(roomService).deleteRoom(anyLong());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/rooms/1"))
                 .andExpect(status().isOk());
     }
 

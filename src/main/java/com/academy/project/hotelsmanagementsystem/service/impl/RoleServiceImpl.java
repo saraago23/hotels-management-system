@@ -9,6 +9,7 @@ import com.academy.project.hotelsmanagementsystem.repository.UserRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -18,12 +19,12 @@ import static com.academy.project.hotelsmanagementsystem.mapper.RoleMapper.*;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleRepository roleRepository;
-
-    private final UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     //admin
@@ -63,7 +64,7 @@ public class RoleServiceImpl implements RoleService {
     public RoleDTO updateRole(Long id, @Valid RoleDTO updatedRole) {
         RoleEntity roleToBeUpdated = roleRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new GeneralException("Role with id: " + id + " was not found"));
 
-        RoleDTO roleDTO=ROLE_MAPPER.toDto(roleToBeUpdated);
+        RoleDTO roleDTO = ROLE_MAPPER.toDto(roleToBeUpdated);
         roleDTO.setDescription(updatedRole.getDescription());
 
         return ROLE_MAPPER.toDto(roleRepository.save(ROLE_MAPPER.toEntity(roleDTO)));
@@ -79,7 +80,7 @@ public class RoleServiceImpl implements RoleService {
             throw new GeneralException("You can not delete a role with existing users");
         }
 
-        RoleDTO roleDTO=ROLE_MAPPER.toDto(roleToBeDeleted);
+        RoleDTO roleDTO = ROLE_MAPPER.toDto(roleToBeDeleted);
 
         roleDTO.setDeleted(true);
         roleRepository.save(ROLE_MAPPER.toEntity(roleDTO));

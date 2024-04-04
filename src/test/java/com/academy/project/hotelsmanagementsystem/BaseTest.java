@@ -19,11 +19,10 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 public class BaseTest {
     @Autowired
     protected WebApplicationContext webApplicationContext;
-
     protected MockMvc mockMvc;
     protected ObjectMapper objectMapper;
 
-    //@BeforeEach
+    @BeforeEach
     public void setUp(){
         mockMvc= MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(springSecurity()).build();

@@ -8,6 +8,7 @@ import com.academy.project.hotelsmanagementsystem.repository.RoomTypeRepository;
 import com.academy.project.hotelsmanagementsystem.service.RoomTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -18,10 +19,10 @@ import static com.academy.project.hotelsmanagementsystem.mapper.RoomTypeMapper.*
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class RoomTypeServiceImpl implements RoomTypeService {
 
-    private final RoomTypeRepository roomTypeRepository;
+    @Autowired
+    private RoomTypeRepository roomTypeRepository;
 
     @Override
     public PageDTO<RoomTypeDTO> findAll(Pageable pageable) {
